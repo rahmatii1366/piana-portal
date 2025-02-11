@@ -1,0 +1,4 @@
+db:
+  host: localhost
+  port: 3033
+  name: oidc-compile

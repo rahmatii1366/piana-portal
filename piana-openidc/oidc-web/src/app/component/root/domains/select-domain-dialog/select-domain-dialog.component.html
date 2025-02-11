@@ -1,0 +1,24 @@
+<mat-dialog-actions [align]="'end'">
+    <button mat-button mat-dialog-close><mat-icon>close</mat-icon></button>
+    <button mat-button (click)="ok()" [disabled]="form.get('domainId').hasError('required')" [matTooltip]="'تایید'"
+        matTooltipHideDelay="200"><mat-icon>check</mat-icon></button>
+</mat-dialog-actions>
+
+<mat-dialog-content>
+    <div class="container">
+        <form [formGroup]="form">
+            <mat-selection-list #shoesList [formControlName]="'domainId'" name="domainId" [multiple]="false">
+                @for (domain of domains; track domain) {
+                    @if (domain.assigned) {
+                        <div class="d-flex justify-content-between" style="padding-left: 16px; padding-right: 16px;">
+                            <div>{{domain.name}}</div>
+                            <div><mat-icon>check</mat-icon></div>
+                        </div>
+                    } @else {
+                        <mat-list-option [value]="domain.id" [disabled]="domain.assigned">{{domain.name}}</mat-list-option>
+                    }
+                }
+            </mat-selection-list>
+        </form>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,48 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: 'piana-openidc'
+  datasource:
+    url: 'jdbc:postgresql://${db.host:localhost}:${db.port:15433}/${db.name:oidc}'
+    username: '${db.username:user}'
+    password: '${db.password:pass}'
+  resources:
+    cache-period: 1
+
+  messages:
+    basename: 'messages/oidc-messages'
+    encoding: 'UTF-8'
+
+  thymeleaf:
+    enabled: true
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+    prefix: file:///home/jibit/piana/piana-openidc/oidc-modules/oidc-ui/src/main/resources/templates/
+  web:
+    resources:
+      cache:
+        period: 0
+
+springdoc:
+  swagger-ui:
+    syntaxHighlight:
+      activated: true
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+  use-fqn: true
+oidc:
+  service:
+    jwt-token:
+      secretKey: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      jwtExpiration: 86400000 # a day
+      issuer: 'https://oidc-user.ir'
+      audience: oidc-user
+piana:
+  tools:
+    redis-cache:
+      enabled: true
+      sentinel: true
+      sentinels: 'localhost:26379,localhost:26380,localhost:26381'
+      master: oidc-redis-master

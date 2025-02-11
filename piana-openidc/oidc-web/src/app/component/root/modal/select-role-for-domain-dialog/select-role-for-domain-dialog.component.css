@@ -1,0 +1,18 @@
+mat-form-field {
+    width: 100%;
+}
+
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 4%; /*you can tweak around with this, */
+    margin-bottom: -15%; /*and this*/
+}
+
+/*you also have to adjust the label, after the above*/
+.mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label {
+    top: 50%;
+}
+.mdc-floating-label--float-above{
+    top: 80% !important;
+}

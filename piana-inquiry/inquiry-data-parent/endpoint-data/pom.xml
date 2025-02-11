@@ -1,0 +1,150 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ir.piana.boot.inquiry</groupId>
+        <artifactId>inquiry-data-parent</artifactId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>endpoint-data</artifactId>
+    <packaging>jar</packaging>
+
+    <name>endpoint-data</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <db.schema>endpoint_schema</db.schema>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <url>${db.url}</url>
+                    <user>${db.username}</user>
+                    <password>${db.password}</password>
+                    <connectRetries>3</connectRetries>
+                    <locations>
+                        <location>filesystem:src/main/resources/db/migration</location>
+                    </locations>
+                    <schemas>
+                        <schema>${db.schema}</schema>
+                    </schemas>
+                    <!--                    <table>flyway_schema_history_mandate</table>-->
+                    <baselineOnMigrate>true</baselineOnMigrate>
+                </configuration>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-database-postgresql</artifactId>
+                        <version>${flyway.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-for-postgresql</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+
+                            <!-- Configure the database connection here -->
+                            <jdbc>
+                                <url>${db.url}</url>
+                                <user>${db.username}</user>
+                                <password>${db.password}</password>
+                            </jdbc>
+
+                            <generator>
+                                <name>org.jooq.codegen.JavaGenerator</name>
+                                <database>
+                                    <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                                    <inputSchema>${db.schema}</inputSchema>
+
+                                    <includes>.*</includes>
+
+                                    <excludes>
+                                        flyway_schema_history | akeys | avals | defined | delete.*
+                                        | department_topic_arr | dup | employee_office_arr | exist.*
+                                        | fetchval | get_.* | ghstore.* | gin.* | hs.* | hstore.*
+                                        | isdefined | isexists | make_array | new_salary | populate_record
+                                        | sale_price | slice.* | swap | tconvert | update_msrp | postal_code
+                                        | evaluation_criteria | rate_type | vat_type | .*_master | each
+                                        | skeys | svals | top_three_sales_per_employee | product_of_product_line |
+                                        .*_jooq
+                                    </excludes>
+
+                                    <!-- Schema version provider -->
+                                    <schemaVersionProvider>SELECT MAX("version") FROM "${db.schema}"."flyway_schema_history"</schemaVersionProvider>
+
+                                    <!-- Give enough time to jOOQ to trigger the queries needed for generating sources
+                                    (default is 5 seconds) -->
+                                    <logSlowQueriesAfterSeconds>20</logSlowQueriesAfterSeconds>
+                                </database>
+
+                                <strategy>
+                                    <matchers>
+                                        <tables>
+                                            <table>
+                                                <pojoClass>
+                                                    <expression>$0_Entity</expression>
+                                                    <transform>PASCAL</transform>
+                                                </pojoClass>
+                                                <daoClass>
+                                                    <expression>$0_Dao</expression>
+                                                    <transform>PASCAL</transform>
+                                                </daoClass>
+                                            </table>
+                                        </tables>
+                                    </matchers>
+                                </strategy>
+
+                                <!-- jOOQ will generate DAOs and POJOs in your behalf -->
+                                <generate>
+                                    <pojos>true</pojos>
+                                    <daos>true</daos>
+                                    <fluentSetters>true</fluentSetters>
+                                    <validationAnnotations>true</validationAnnotations>
+                                    <springAnnotations>true</springAnnotations>
+                                </generate>
+
+                                <target>
+                                    <packageName>ir.piana.boot.inquiry.endpoint.data</packageName>
+                                    <directory>target/generated-sources</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

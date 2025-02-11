@@ -1,0 +1,10 @@
+docker inspect crp-postgres \
+    -f "{{json .NetworkSettings.Networks }}"
+
+docker inspect crp-nats \
+    -f "{{json .NetworkSettings.Networks }}"
+
+docker inspect crp-pgadmin \
+    -f "{{json .NetworkSettings.Networks }}"
+
+docker rm -f $(docker ps -a -q)

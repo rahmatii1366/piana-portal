@@ -1,0 +1,101 @@
+HELP.md
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+**/.apt_generated
+**/.classpath
+**/.factorypath
+**/.project
+**/.settings
+**/.springBeans
+**/.sts4-cache
+
+### IntelliJ IDEA ###
+**/.idea
+**/.idea/**
+**/*.iws
+**/*.iml
+**/*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+**/oidc-gateway/**/dist
+**/oidc-gateway/**/dist/**
+#**/docker-compose/data
+#**/docker-compose/data/**
+
+**/docker-compose/**
+!**/docker-compose/.env
+!**/docker-compose/common-commands.txt
+!**/docker-compose/docker-compose.yml
+!**/docker-compose/docker-compose.yaml
+
+**/.idea
+
+### VS Code ###
+.vscode/
+
+scripts/**.csr
+scripts/**.crt
+scripts/**.key
+scripts/**.p12
+scripts/**.jks
+
+docker-compose/data/**
+
+
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+**/dist
+**/tmp
+**/out-tsc
+**/bazel-out
+
+# Node
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+
+# IDEs and editors
+**/.angular/
+**/package-lock.json
+**/.idea/
+**/.project
+**/.classpath
+**/.c9/
+**/*.launch
+**/.settings/
+**/*.sublime-workspace
+
+# Visual Studio Code
+**/.vscode/*
+!**/.vscode/settings.json
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/extensions.json
+**/.history/*
+
+# Miscellaneous
+**/.angular/cache
+**/.sass-cache/
+**/connect.lock
+**/coverage
+**/libpeerconnection.log
+**/testem.log
+**/typings
+
+# System files
+**/.DS_Store
+**/Thumbs.db

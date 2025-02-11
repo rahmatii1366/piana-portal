@@ -1,0 +1,46 @@
+mat-form-field {
+    width: 100%;
+}
+
+.filters {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.mdc-data-table__header-cell,
+.mdc-data-table__header-cell {
+    text-align: center !important;
+    flex: 0 0 200px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: lightgrey;
+}
+
+.mdc-data-table__cell,
+.mdc-data-table__cell {
+    text-align: center !important;
+}
+
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+    justify-content: center;
+}
+
+.mat-mdc-table {
+    overflow-x: scroll;
+}
+
+tr.example-detail-row {
+    height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+    background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+    background: #efefef;
+}
+
+.example-element-row td {
+    border-bottom-width: 0;
+}

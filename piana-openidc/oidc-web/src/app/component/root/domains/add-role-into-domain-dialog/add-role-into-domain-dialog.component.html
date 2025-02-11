@@ -1,0 +1,85 @@
+<mat-dialog-actions [align]="'end'">
+    <button mat-button mat-dialog-close><mat-icon>close</mat-icon></button>
+</mat-dialog-actions>
+<mat-dialog-content>
+    <div class="container">
+        <main>
+            <mat-accordion class="example-headers-align" multi>
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> فیلتر جستجو </mat-panel-title>
+                        <mat-panel-description>
+                            <mat-icon>account_circle</mat-icon>
+                            انتخاب نقش و مجوزهای مرتبط برای اضافه کردن در دامنه {{data['domain']['name']}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <form class="needs-validation" novalidate="" [formGroup]="newDomainFormGroup" (submit)="insertData()">
+                        <div class="row g-5 justify-content-center pt-3">
+                            <div class="col-md-12 col-lg-12 filters mt-5 p-4">
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>نقش کاربری</mat-label>
+                                            <input type="text" [formControlName]="'role'" matInput
+                                                [errorStateMatcher]="matcher" placeholder="" [disabled]="true">
+                                            <button matSuffix mat-icon-button aria-label="Clear"
+                                                [matTooltip]="'پاک کردن و بازنشانی'"
+                                                matTooltipHideDelay="200"
+                                                [disabled]="!selectRoleButtonEnable"
+                                                type="button"
+                                                (click)="openSelectRoleDialog($event)">
+                                                <mat-icon>settings</mat-icon>
+                                            </button>
+                                            <!-- @if (podiumFormGroup.get('domainName').hasError('required')) {
+                                            <mat-error>Date is <strong>required</strong></mat-error>
+                                            } -->
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>مجوز های دسترسی</mat-label>
+                                            <input type="text" [formControlName]="'permissions'" matInput
+                                                [errorStateMatcher]="matcher" placeholder="" [disabled]="true">
+                                            <button matSuffix mat-icon-button aria-label="Clear"
+                                                [matTooltip]="'پاک کردن و بازنشانی'"
+                                                matTooltipHideDelay="200"
+                                                [disabled]="selectedRole == null"
+                                                type="button"
+                                                (click)="openSeachPermissionsDialog($event)">
+                                                <mat-icon>drag_indicator</mat-icon>
+                                            </button>
+                                            <!-- @if (podiumFormGroup.get('domainName').hasError('required')) {
+                                            <mat-error>Date is <strong>required</strong></mat-error>
+                                            } -->
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>minAmount</mat-label>
+                                            <input type="number" matInput [formControlName]="'minAmount'" [errorStateMatcher]="matcher">
+                                            @if (podiumFormGroup.get('minAmount').hasError('min')) {
+                                            <mat-error>minAmount should be greeter tahn <strong>0</strong></mat-error>
+                                            }
+                                        </mat-form-field>
+                                    </div>
+            
+                                    <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>maxAmount</mat-label>
+                                            <input type="number" matInput [formControlName]="'maxAmount'" [errorStateMatcher]="matcher">
+                                            @if (podiumFormGroup.hasError('maxAmount')) {
+                                            <mat-error>maxAmount should be greeter tahn <strong>0</strong></mat-error>
+                                            }
+                                        </mat-form-field>
+                                    </div> -->
+                                </div>
+        
+                                <button class="w-100 btn btn-primary btn-lg" type="submit">افزودن</button>
+                            </div>
+                        </div>
+                    </form>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </main>
+    </div>
+</mat-dialog-content>

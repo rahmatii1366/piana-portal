@@ -1,0 +1,83 @@
+<mat-dialog-actions [align]="'end'">
+    <button mat-button mat-dialog-close
+        [matTooltip]="'انصراف'"
+        matTooltipHideDelay="200"><mat-icon>close</mat-icon></button>
+    <button mat-button (click)="ok()" [disabled]="this.selectedRoles.length == 0"
+        [matTooltip]="'تایید'"
+        matTooltipHideDelay="200"><mat-icon>check</mat-icon></button>
+</mat-dialog-actions>
+<mat-dialog-content>
+    <div class="container">
+        <main class="mt-4">
+            <mat-accordion class="example-headers-align" multi>
+                <mat-expansion-panel [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title> فیلتر جستجو </mat-panel-title>
+                        <mat-panel-description>
+                            <mat-icon>account_circle</mat-icon>
+                            جستجوی نقش ها برای اضافه کردن در دامنه {{data['domain']['name']}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <form class="needs-validation" novalidate="" [formGroup]="searchFormGroup" (submit)="loadData()">
+                        <div class="row g-5 justify-content-center pt-3">
+                            <div class="col-md-12 col-lg-12 filters mt-5 p-4">
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>نام نقش</mat-label>
+                                            <input type="text" [formControlName]="'name'" matInput
+                                                [errorStateMatcher]="matcher" placeholder="">
+                                            <!-- @if (podiumFormGroup.get('domainName').hasError('required')) {
+                                    <mat-error>Date is <strong>required</strong></mat-error>
+                                    } -->
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <button class="w-12 btn btn-primary btn-sm" type="submit">Select</button>
+                            </div>
+                        </div>
+                    </form>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-12 col-lg-12 mb-5">
+                    <mat-paginator [length]="(searchRoleService.roles | async).count" [pageSize]="size"
+                        (page)="handlePage($event)" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+                    </mat-paginator>
+                    <table mat-table matSort [dataSource]="(searchRoleService.roles | async).data"
+                        class="mat-elevation-z8">
+
+                        @for (column of displayedColumns; track column) {
+                        <ng-container matColumnDef="{{column}}">
+                            <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+                            <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+                        </ng-container>
+                        }
+
+                        <ng-container matColumnDef="operation">
+                            <th mat-header-cell *matHeaderCellDef aria-label="row actions">عملیات</th>
+                            <td mat-cell *matCellDef="let element">
+                                @if(!element.domainId) {
+                                <section class="example-section">
+                                    <mat-checkbox class="" (change)="addRoles($event, element)" ></mat-checkbox>
+                                </section>
+                                }
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumnsWithCommand"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumnsWithCommand;"></tr>
+                    </table>
+                    @if ((searchRoleService.roles | async).count > 0) {
+                    <mat-paginator [length]="(searchRoleService.roles | async).count" dir="rtl" [pageSize]="size"
+                        (page)="handlePage($event)" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+                    </mat-paginator>
+                    }
+                </div>
+            </div>
+
+        </main>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>ir.piana.boot</groupId>
+		<artifactId>piana-spring-boot-bom</artifactId>
+		<version>3.4.2</version>
+	</parent>
+
+	<groupId>ir.piana.boot.openidc</groupId>
+	<artifactId>piana-openidc</artifactId>
+	<version>1.0</version>
+    <packaging>pom</packaging>
+    <name>piana-openidc</name>
+	<description>Project for Implement Open ID Connect Top Of  Spring Boot</description>
+
+	<developers>
+		<developer>
+			<name>mj.rahmati</name>
+			<email>pianairco@gmail.com</email>
+		</developer>
+	</developers>
+
+	<modules>
+		<module>auth-spi</module>
+		<module>oidc-data</module>
+		<module>oidc-core</module>
+		<module>oidc-gateway</module>
+		<module>oidc-starter</module>
+		<module>oidc-ui</module>
+	</modules>
+
+	<properties>
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<docker.allContainers>true</docker.allContainers>
+		<docker.maven.plugin>0.45.1</docker.maven.plugin>
+		<postgresql.image>docker.arvancloud.ir/postgres:latest</postgresql.image>
+		<db.host>localhost</db.host>
+		<db.port>3033</db.port>
+		<db.name>oidc-compile</db.name>
+		<db.username>user</db.username>
+		<db.password>pass</db.password>
+		<!--suppress UnresolvedMavenProperty -->
+		<db.url>jdbc:postgresql://${db.host}:${db.port}/${db.name}</db.url>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>ir.piana.boot.utils</groupId>
+			<artifactId>jedis-utility</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>${docker.maven.plugin}</version>
+				<inherited>false</inherited>
+
+				<executions>
+					<execution>
+						<id>delete-before-generate-sources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>start-after-initialize</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<images>
+						<image>
+							<name>${postgresql.image}</name>
+							<run>
+								<containerNamePattern>oidc-fabric8</containerNamePattern>
+								<ports>
+									<port>${db.port}:5432</port>
+								</ports>
+								<env>
+									<POSTGRES_DB>${db.name}</POSTGRES_DB>
+									<POSTGRES_USER>${db.username}</POSTGRES_USER>
+									<POSTGRES_PASSWORD>${db.password}</POSTGRES_PASSWORD>
+								</env>
+								<log>
+									<enabled>true</enabled>
+									<prefix>POSTGRESQL |</prefix>
+									<color>cyan</color>
+								</log>
+								<wait>
+									<time>5000</time>
+								</wait>
+							</run>
+						</image>
+					</images>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+					<release>${maven.compiler.target}</release>
+
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.2</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

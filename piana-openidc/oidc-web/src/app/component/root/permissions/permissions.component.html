@@ -1,0 +1,120 @@
+<div class="container">
+    <main class="mt-4">
+        <mat-accordion class="example-headers-align" multi>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title> ثبت مجوز جدید </mat-panel-title>
+                    <mat-panel-description>
+                        <mat-icon>add_circle_outline</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form class="needs-validation" novalidate="" [formGroup]="insertFormGroup" (submit)="insert()">
+                    <div class="row g-5 justify-content-center pt-3">
+                        <div class="col-md-12 col-lg-12 filters mt-5 p-4">
+                            <div class="row g-3">
+                                <div class="col-sm-6 offset-md-6">
+                                    <mat-form-field class="example-full-width">
+                                        <mat-label>نام مجوز</mat-label>
+                                        <input type="text" [formControlName]="'name'" matInput
+                                            [errorStateMatcher]="matcher" placeholder="">
+                                        @if (insertFormGroup.get('name').hasError('required')) {
+                                        <mat-error>Name is <strong>required</strong></mat-error>
+                                        }
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-sm-6">
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <mat-form-field class="example-full-width">
+                                            <mat-label>توضیحات</mat-label>
+                                            <input type="number" matInput [formControlName]="'description'"
+                                                [errorStateMatcher]="matcher">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="w-12 btn btn-primary btn-sm" type="submit">ثبت</button>
+                        </div>
+                    </div>
+                </form>
+            </mat-expansion-panel>
+            <mat-expansion-panel expanded="true">
+                <mat-expansion-panel-header>
+                    <mat-panel-title> فیلتر جستجو </mat-panel-title>
+                    <mat-panel-description>
+                        <mat-icon>search</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form class="needs-validation" novalidate="" [formGroup]="searchFormGroup" (submit)="loadData()">
+                    <div class="row g-5 justify-content-center pt-3">
+                        <div class="col-md-12 col-lg-12 filters mt-5 p-4">
+                            <div class="row g-3">
+                                <div class="col-sm-6 offset-md-6">
+                                    <mat-form-field class="example-full-width">
+                                        <mat-label>نام مجوز</mat-label>
+                                        <input type="text" [formControlName]="'name'" matInput
+                                            [errorStateMatcher]="matcher" placeholder="">
+                                        <!-- @if (podiumFormGroup.get('domainName').hasError('required')) {
+                                    <mat-error>Date is <strong>required</strong></mat-error>
+                                    } -->
+                                    </mat-form-field>
+                                </div>
+                            </div>
+
+                            <button class="w-12 btn btn-primary btn-sm" type="submit">Select</button>
+                        </div>
+                    </div>
+                </form>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-12 col-lg-12 mb-5">
+                <mat-paginator [length]="(permissionService.statement | async).count" [pageSize]="10"
+                    (page)="handlePage($event)" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+                </mat-paginator>
+                <table mat-table matSort [dataSource]="(permissionService.statement | async).data" class="mat-elevation-z8">
+
+                    <!--- Note that these columns can be defined in any order.
+                          The actual rendered columns are set as a property on the row definition" -->
+
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef> Id </th>
+                        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                    </ng-container>
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Name </th>
+                        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="description">
+                        <th mat-header-cell *matHeaderCellDef> Description </th>
+                        <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+                    </ng-container>
+
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="created">
+                        <th mat-header-cell *matHeaderCellDef>Date-Time</th>
+                        <td mat-cell *matCellDef="let element"> {{element.persianDateTime}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                @if ((permissionService.statement | async).count > 0) {
+                <mat-paginator [length]="(permissionService.statement | async).count" dir="rtl" (page)="handlePage($event)"
+                    [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+                </mat-paginator>
+                }
+            </div>
+        </div>
+
+    </main>
+</div>

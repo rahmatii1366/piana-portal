@@ -1,0 +1,47 @@
+{
+  "items": [
+    {
+      "type": "item",
+      "title": "dashboard",
+      "logo": "house-fill"
+    },
+    {
+      "type": "item",
+      "title": "orders",
+      "logo": "file-earmark"
+    },
+    {
+      "type": "item",
+      "title": "products",
+      "logo": "cart"
+    },
+    {
+      "type": "item",
+      "title": "customers",
+      "logo": "people"
+    },
+    {
+      "type": "item",
+      "title": "reports",
+      "logo": "graph-up"
+    },
+    {
+      "type": "item",
+      "title": "integrations",
+      "logo": "puzzle"
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "type": "item",
+      "title": "setting",
+      "logo": "gear-wide-connected"
+    },
+    {
+      "type": "item",
+      "title": "sign out",
+      "logo": "door-closed"
+    }
+  ]
+}
