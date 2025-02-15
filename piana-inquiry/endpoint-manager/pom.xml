@@ -28,6 +28,11 @@
             <version>1.0</version>
         </dependency>
         <dependency>
+            <groupId>ir.piana.boot.utils</groupId>
+            <artifactId>nats-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>

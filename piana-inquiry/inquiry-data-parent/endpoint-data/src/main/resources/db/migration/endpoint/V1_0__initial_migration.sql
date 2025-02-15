@@ -17,8 +17,26 @@ CREATE TABLE shedlock
     PRIMARY KEY (name)
 );
 
+CREATE TABLE service_point (
+    id                          BIGSERIAL       NOT NULL PRIMARY KEY,
+    name                        varchar(64)     NOT NULL,
+    description                 varchar(256),
+    disabled                    BOOLEAN         NOT NULL default true,
+    create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT service_point_f_name_uk UNIQUE (name)
+);
+
+ALTER SEQUENCE "service_point_id_seq" RESTART WITH 100;
+
+insert into service_point (id, name, description)
+    select 1, 'vehicle_third_party_insurance', ''
+    WHERE NOT EXISTS (SELECT * FROM service_point);
+
 CREATE TABLE endpoint (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
+    service_point_id            BIGINT          NOT NULL,
+    execution_order             INT             NOT NULL,
     name                        varchar(64)     NOT NULL,
     is_debug_mode               BOOLEAN         NOT NULL default false,
     is_secure                   BOOLEAN         NOT NULL default false,
@@ -37,16 +55,18 @@ CREATE TABLE endpoint (
     disabled                    BOOLEAN         NOT NULL default true,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT endpoint_f_name_uk UNIQUE (name)
+    CONSTRAINT endpoint_f_name_uk UNIQUE (name),
+    CONSTRAINT endpoint_f_service_point_id_execution_order_uk UNIQUE (service_point_id, execution_order),
+    CONSTRAINT endpoint_f_service_point_id_fk foreign key(service_point_id) REFERENCES service_point (id)
 );
 
 ALTER SEQUENCE "endpoint_id_seq" RESTART WITH 100;
 
-insert into endpoint (id, name, is_secure, host, port, base_url,
+insert into endpoint (id, service_point_id, execution_order, name, is_secure, host, port, base_url,
     so_timeout, connection_timeout, socket_timeout, time_to_live,
     pool_reuse_policy, pool_concurrency_policy,
      trust_store, trust_store_password, tls_versions)
-    select 1, 'taban', true, 'sw.tabanapisis.org', 9000, '',
+    select 1, 1, 1, 'taban', true, 'sw.tabanapisis.org', 9000, '',
         30, 30, 30, 120,
         'LIFO', 'STRICT',
         '', '', 'V_1_3,V_1_2'
@@ -56,15 +76,22 @@ CREATE TABLE endpoint_limitation
 (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
     endpoint_id                 BIGINT          NOT NULL,
-    start_date                  CHAR(10)        NOT NULL,
+    start_at                    CHAR(10)        NOT NULL,
     expire_at                   CHAR(10)        NOT NULL,
-    limitation_in_day           INT             NOT NULL,
-    limitation_in_period        INT             NOT NULL,
+    limitation_in_tps           INT,
+    limitation_in_minute        INT,
+    limitation_in_hour          INT,
+    limitation_in_day           INT,
+    limitation_in_week          INT,
+    limitation_in_month         INT,
+    limitation_in_year          INT,
+    limitation_in_period        INT,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER SEQUENCE "endpoint_limitation_id_seq" RESTART WITH 100;
 
-insert into endpoint_limitation (id, endpoint_id, start_date, expire_at, limitation_in_day, limitation_in_period)
-    select 1, 1, '1403/11/16', '1403/12/29', 100, 1500
+insert into endpoint_limitation (id, endpoint_id, start_at, expire_at,
+    limitation_in_tps, limitation_in_day, limitation_in_period)
+    select 1, 1, '1403/11/16', '1403/12/29', 5, 1000, 15000
     WHERE NOT EXISTS (SELECT * FROM endpoint_limitation);

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-@ConditionalOnProperty(name = "piana.tools.internal-client.enabled", matchIfMissing = false)
+@ConditionalOnProperty(name = "piana.tools.internal-client.enabled", havingValue = "true", matchIfMissing = false)
 public class InternalRestClientBeanCreatorConfig {
     private static Logger logger = LoggerFactory.getLogger(InternalRestClientBeanCreatorConfig.class);
 

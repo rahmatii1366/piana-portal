@@ -27,6 +27,8 @@
         <module>piana-web-error-processor</module>
         <module>jedis-utility</module>
         <module>endpoint-limiter</module>
+        <module>nats-client</module>
+        <module>endpoint-handler</module>
     </modules>
 
     <build>

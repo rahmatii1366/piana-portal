@@ -20,7 +20,11 @@ piana:
       schedulerLockName: 'EndpointManagerJob'
       periodUnit: "Seconds"
   tools:
+    internal-client:
+      enabled: false
+
     nats:
+      enabled: true
       url: 'nats://localhost:4222'
       status: 'enable'
 

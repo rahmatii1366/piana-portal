@@ -24,6 +24,7 @@ piana:
     log:
       trace-prefix: ir.piana
     nats:
+      enabled: true
       url: 'nats://localhost:4222'
       status: 'enable'
     redisCache:

@@ -1,10 +1,10 @@
 package ir.piana.boot.inquiry.core.httpclient.consumer;
 
 import ir.piana.boot.inquiry.common.httpclient.Endpoints;
-import ir.piana.boot.inquiry.common.nats.MessageHandler;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import ir.piana.boot.utils.natsclient.MessageHandler;
 
 @Component
 public class EndpointRefreshNatsSubscriber implements MessageHandler<Endpoints> {

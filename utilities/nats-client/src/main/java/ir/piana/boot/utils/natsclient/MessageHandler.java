@@ -1,4 +1,4 @@
-package ir.piana.boot.inquiry.common.nats;
+package ir.piana.boot.utils.natsclient;
 
 import java.util.function.Function;
 

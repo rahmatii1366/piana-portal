@@ -1,4 +1,4 @@
-package ir.piana.boot.inquiry.common.nats;
+package ir.piana.boot.utils.natsclient;
 
 import io.nats.client.Connection;
 import io.nats.client.Nats;
@@ -6,6 +6,7 @@ import io.nats.client.Options;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Configuration
+@ConditionalOnProperty(name = "piana.tools.nats.enabled", havingValue = "true", matchIfMissing = false)
 public class NatsConfig {
 
     @Value("${piana.tools.nats.url}")

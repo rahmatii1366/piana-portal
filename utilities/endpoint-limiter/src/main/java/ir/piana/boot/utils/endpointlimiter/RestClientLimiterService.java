@@ -1,15 +1,12 @@
 package ir.piana.boot.utils.endpointlimiter;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class RestClientLimiterService {
-    private final RestClientLimiterCollectionModel limiterCollectionModel;
+    /*private final RestClientLimiterCollectionModel limiterCollectionModel;
 
     @PostConstruct
     public void onPostConstructor() {
@@ -28,7 +25,5 @@ public class RestClientLimiterService {
             log.error("limiterModels for {} has duplicated order", limiterCollectionModel.name());
             return;
         }
-
-
-    }
+    }*/
 }
