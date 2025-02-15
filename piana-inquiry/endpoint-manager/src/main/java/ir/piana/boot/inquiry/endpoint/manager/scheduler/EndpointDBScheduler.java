@@ -3,19 +3,19 @@ package ir.piana.boot.inquiry.endpoint.manager.scheduler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nats.client.Connection;
+import ir.piana.boot.inquiry.common.httpclient.Endpoints;
 import ir.piana.boot.inquiry.common.httpclient.HttpClientProperties;
 import ir.piana.boot.inquiry.common.scheduler.FixedIntervalScheduler;
 import ir.piana.boot.inquiry.endpoint.data.tables.Endpoint;
 import ir.piana.boot.inquiry.endpoint.data.tables.daos.EndpointDao;
+import ir.piana.boot.utils.jedisutils.JedisPool;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalField;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,16 +25,19 @@ public class EndpointDBScheduler extends FixedIntervalScheduler {
     private final EndpointDao endpointDao;
     private final Connection connection;
     private final ObjectMapper objectMapper;
+    private final JedisPool jedisPool;
 
     private List<HttpClientProperties> httpClientProperties;
 
     public EndpointDBScheduler(
             EndpointDao endpointDao,
             @Lazy Connection connection,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            JedisPool jedisPool) {
         this.endpointDao = endpointDao;
         this.connection = connection;
         this.objectMapper = objectMapper;
+        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -81,15 +84,14 @@ public class EndpointDBScheduler extends FixedIntervalScheduler {
                                 .orElse(TLS.V_1_3.name()).split(",")).toList())
                 );
 
-
         try {
-            byte[] body = objectMapper.writeValueAsBytes(
-                    Collections.singletonMap("httpClientProperties", httpClientProperties));
-            connection.publish("piana.inquiry.endpoint.refreshed", body);
+            String body = objectMapper.writeValueAsString(
+                    Endpoints.builder().httpClientProperties(httpClientProperties).build());
+            jedisPool.setKey("endpoints", body);
+            connection.publish("piana.inquiry.endpoint.refreshed", body.getBytes());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
 
         /*clients.stream().map(client -> {
             try {

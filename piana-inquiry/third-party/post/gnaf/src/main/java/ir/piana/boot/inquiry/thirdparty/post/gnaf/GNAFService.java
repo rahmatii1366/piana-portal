@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.piana.boot.utils.errorprocessor.ApiExceptionService;
 import ir.piana.boot.utils.errorprocessor.InternalServerErrorTypes;
-import ir.piana.dev.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.JedisPool;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

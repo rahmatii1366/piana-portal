@@ -23,3 +23,10 @@ piana:
     nats:
       url: 'nats://localhost:4222'
       status: 'enable'
+
+    redis-cache:
+      enabled: true
+      sentinel: true
+      sentinels: 'localhost:26379,localhost:26380,localhost:26381'
+      master: 'oidc-redis-master'
+      prefix: 'piana.inquiry'

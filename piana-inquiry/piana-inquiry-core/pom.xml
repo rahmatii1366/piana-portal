@@ -5,6 +5,7 @@
         <groupId>ir.piana.boot.inquiry</groupId>
         <artifactId>piana-inquiry</artifactId>
         <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>piana-inquiry-core</artifactId>

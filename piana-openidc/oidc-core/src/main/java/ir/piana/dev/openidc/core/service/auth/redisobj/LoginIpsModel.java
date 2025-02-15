@@ -1,7 +1,7 @@
 package ir.piana.dev.openidc.core.service.auth.redisobj;
 
-import ir.piana.dev.utils.jedisutils.JedisPool;
-import ir.piana.dev.utils.jedisutils.RedisHashMappable;
+import ir.piana.boot.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.RedisHashMappable;
 
 import java.util.*;
 

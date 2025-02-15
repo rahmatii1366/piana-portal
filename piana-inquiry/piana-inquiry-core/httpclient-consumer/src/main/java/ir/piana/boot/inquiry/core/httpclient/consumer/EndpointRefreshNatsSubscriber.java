@@ -1,15 +1,13 @@
 package ir.piana.boot.inquiry.core.httpclient.consumer;
 
-import ir.piana.boot.inquiry.common.httpclient.HttpClientProperties;
+import ir.piana.boot.inquiry.common.httpclient.Endpoints;
 import ir.piana.boot.inquiry.common.nats.MessageHandler;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
-import java.util.List;
-
 @Component
-public class EndpointRefreshNatsSubscriber implements MessageHandler<EndpointRefreshNatsSubscriber.Request> {
+public class EndpointRefreshNatsSubscriber implements MessageHandler<Endpoints> {
     private final ResourceLoader resourceLoader;
     private final GenericWebApplicationContext applicationContext;
     private final EndpointRestClientBeanCreatorConfig endpointRestClientBeanCreatorConfig;
@@ -30,14 +28,12 @@ public class EndpointRefreshNatsSubscriber implements MessageHandler<EndpointRef
 
     @Override
     public Class dtoType() {
-        return Request.class;
+        return Endpoints.class;
     }
 
     @Override
-    public Object apply(Request request) {
-        endpointRestClientBeanCreatorConfig.refresh(request.httpClientProperties);
+    public Object apply(Endpoints endpoints) {
+        endpointRestClientBeanCreatorConfig.refresh(endpoints.getHttpClientProperties());
         return null;
     }
-
-    record Request (List<HttpClientProperties> httpClientProperties) {}
 }

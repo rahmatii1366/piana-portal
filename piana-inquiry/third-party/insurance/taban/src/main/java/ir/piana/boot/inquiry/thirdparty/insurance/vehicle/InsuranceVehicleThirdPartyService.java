@@ -3,7 +3,7 @@ package ir.piana.boot.inquiry.thirdparty.insurance.vehicle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.piana.boot.utils.errorprocessor.InternalServerErrorTypes;
-import ir.piana.dev.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.JedisPool;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

@@ -27,8 +27,8 @@
     </developers>
 
     <modules>
-        <module>piana-web-error-processor</module>
-        <module>jedis-utility</module>
+        <module>piana-spring-boot-bom</module>
+        <module>utilities</module>
         <module>piana-openidc</module>
         <module>piana-inquiry</module>
     </modules>

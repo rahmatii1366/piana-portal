@@ -56,13 +56,13 @@ public class RestClientBuilderUtils {
             PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
             if (httpClientProperties.isSecure()) {
                 List<TLS> tlsVersions = null;
-                List<String> tlsVersionStrings = httpClientProperties.tlsVersions();
+                List<String> tlsVersionStrings = httpClientProperties.getTlsVersions();
                 if (tlsVersionStrings != null && !tlsVersionStrings.isEmpty()) {
                     tlsVersions = tlsVersionStrings.stream().map(TLS::valueOf).toList();
                 } else {
                     tlsVersions = List.of(TLS.V_1_3);
                 }
-                if (httpClientProperties.trustStore() == null || httpClientProperties.trustStore().isEmpty()) {
+                if (httpClientProperties.getTrustStore() == null || httpClientProperties.getTrustStore().isEmpty()) {
                     builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
                             .setSslContext(SSLContexts.custom()
                                     .loadTrustMaterial(null, (X509Certificate[] chain, String authType) -> true)
@@ -71,12 +71,12 @@ public class RestClientBuilderUtils {
                             .build());
                 } else {
                     KeyStore ks = KeyStore.getInstance("JKS");
-                    if (httpClientProperties.trustStore().startsWith("classpath:")) {
-                        Resource resource = resourceLoader.getResource(httpClientProperties.trustStore());
-                        ks.load(resource.getInputStream(), httpClientProperties.trustStorePassword().toCharArray());
+                    if (httpClientProperties.getTrustStore().startsWith("classpath:")) {
+                        Resource resource = resourceLoader.getResource(httpClientProperties.getTrustStore());
+                        ks.load(resource.getInputStream(), httpClientProperties.getTrustStorePassword().toCharArray());
                     } else {
-                        File trustFile = new File(httpClientProperties.trustStore());
-                        ks.load(new FileInputStream(trustFile), httpClientProperties.trustStorePassword().toCharArray());
+                        File trustFile = new File(httpClientProperties.getTrustStore());
+                        ks.load(new FileInputStream(trustFile), httpClientProperties.getTrustStorePassword().toCharArray());
                     }
 
                     builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
@@ -93,22 +93,22 @@ public class RestClientBuilderUtils {
 
             builder.setDefaultSocketConfig(SocketConfig.custom()
                             .setSoTimeout(Timeout.ofSeconds(
-                                    Optional.ofNullable(httpClientProperties.soTimeout()).orElse(20L)))
+                                    Optional.ofNullable(httpClientProperties.getSoTimeout()).orElse(20L)))
                             .build())
-                    .setPoolConcurrencyPolicy(Optional.ofNullable(httpClientProperties.poolConcurrencyPolicy())
+                    .setPoolConcurrencyPolicy(Optional.ofNullable(httpClientProperties.getPoolConcurrencyPolicy())
                             .map(PoolConcurrencyPolicy::valueOf).orElse(PoolConcurrencyPolicy.STRICT))
-                    .setConnPoolPolicy(Optional.ofNullable(httpClientProperties.poolReusePolicy())
+                    .setConnPoolPolicy(Optional.ofNullable(httpClientProperties.getPoolReusePolicy())
                             .map(PoolReusePolicy::valueOf).orElse(PoolReusePolicy.LIFO))
                     .setDefaultConnectionConfig(ConnectionConfig.custom()
                             .setSocketTimeout(Timeout.ofSeconds(
-                                    Optional.ofNullable(httpClientProperties.socketTimeout()).orElse(30L)))
+                                    Optional.ofNullable(httpClientProperties.getSocketTimeout()).orElse(30L)))
                             .setConnectTimeout(Timeout.ofSeconds(
-                                    Optional.ofNullable(httpClientProperties.connectionTimeout()).orElse(30L)))
+                                    Optional.ofNullable(httpClientProperties.getConnectionTimeout()).orElse(30L)))
                             .setTimeToLive(Timeout.ofSeconds(
-                                    Optional.ofNullable(httpClientProperties.timeToLive()).orElse(600L)))
+                                    Optional.ofNullable(httpClientProperties.getTimeToLive()).orElse(600L)))
                             .build())
                     .build();
-            Logger log = LoggerFactory.getLogger(httpClientProperties.name());
+            Logger log = LoggerFactory.getLogger(httpClientProperties.getName());
             final CloseableHttpClient httpClient = HttpClientBuilder
                     .create()
                     .setConnectionManager(builder.build())
@@ -122,8 +122,8 @@ public class RestClientBuilderUtils {
             RestClient.Builder restClientBuilder = RestClient.builder()
                     .requestFactory(requestFactory)
                     .baseUrl((httpClientProperties.isSecure() ? "https://" : "http://") +
-                            httpClientProperties.host() + ":" + httpClientProperties.port() + "/" +
-                            (httpClientProperties.baseUrl() != null ? httpClientProperties.baseUrl() + "/" : ""));
+                            httpClientProperties.getHost() + ":" + httpClientProperties.getPort() + "/" +
+                            (httpClientProperties.getBaseUrl() != null ? httpClientProperties.getBaseUrl() + "/" : ""));
             if (httpClientProperties.isDebugMode()) {
                 restClientBuilder.requestInterceptor((request, body, execution) -> {
                     logRequest(log, request, body);
@@ -134,18 +134,18 @@ public class RestClientBuilderUtils {
                 });
             }
             RestClient restClient = restClientBuilder.build();
-            if (applicationContext.containsBean(httpClientProperties.name())) {
+            if (applicationContext.containsBean(httpClientProperties.getName())) {
 //                BeanDefinitionRegistry beanRegistry = (BeanDefinitionRegistry) applicationContext.getAutowireCapableBeanFactory();
 //                BeanDefinition newBeanDefinition = BeanDefinitionBuilder.rootBeanDefinition(httpClientProperties.name(), RestClient.class, () -> restClient).getBeanDefinition();
                 //this is needed if u want to revert your bean changes back to how it was
                 //BeanDefinition oldBeanDefinition = beanRegistry.getBeanDefinition(httpClientProperties.name());
 //                beanRegistry.registerBeanDefinition(httpClientProperties.name(), newBeanDefinition);
-                applicationContext.removeBeanDefinition(httpClientProperties.name());
+                applicationContext.removeBeanDefinition(httpClientProperties.getName());
             }
 
-            applicationContext.registerBean(httpClientProperties.name(), RestClient.class, () -> restClient);
+            applicationContext.registerBean(httpClientProperties.getName(), RestClient.class, () -> restClient);
 
-            logger.info("client by name {} registered", httpClientProperties.name());
+            logger.info("client by name {} registered", httpClientProperties.getName());
             return restClient;
         } catch (Exception e) {
             throw new RuntimeException(e);

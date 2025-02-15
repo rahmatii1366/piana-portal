@@ -19,7 +19,7 @@ import ir.piana.dev.openidc.data.tables.Permissions;
 import ir.piana.dev.openidc.data.tables.UserEntrance;
 import ir.piana.dev.openidc.data.tables.daos.*;
 import ir.piana.dev.openidc.data.tables.pojos.*;
-import ir.piana.dev.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.JedisPool;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

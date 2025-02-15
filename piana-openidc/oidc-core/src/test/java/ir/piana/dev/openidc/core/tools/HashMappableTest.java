@@ -2,8 +2,8 @@ package ir.piana.dev.openidc.core.tools;
 
 import ir.piana.dev.openidc.core.service.auth.redisobj.TokenRelatedModel;
 import ir.piana.dev.openidc.core.service.auth.redisobj.UserEntranceModel;
-import ir.piana.dev.utils.jedisutils.JedisPool;
-import ir.piana.dev.utils.jedisutils.JedisProvider;
+import ir.piana.boot.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.JedisProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

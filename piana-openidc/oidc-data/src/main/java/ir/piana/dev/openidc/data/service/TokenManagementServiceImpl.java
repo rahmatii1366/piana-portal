@@ -7,7 +7,7 @@ import ir.piana.dev.openidc.core.service.auth.redisobj.LoginIpsModel;
 import ir.piana.dev.openidc.core.service.auth.redisobj.TokenRelatedModel;
 import ir.piana.dev.openidc.core.service.auth.redisobj.UserEntranceModel;
 import ir.piana.dev.openidc.core.service.user.dto.UserDetails;
-import ir.piana.dev.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.jedisutils.JedisPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
