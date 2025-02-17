@@ -29,7 +29,6 @@
     <modules>
         <module>third-party</module>
         <module>piana-inquiry-publisher</module>
-        <module>endpoint-manager</module>
         <module>inquiry-data-parent</module>
         <module>piana-inquiry-core</module>
     </modules>

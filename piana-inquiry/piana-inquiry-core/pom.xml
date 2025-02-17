@@ -17,8 +17,6 @@
     </properties>
 
     <modules>
-        <module>commons</module>
-        <module>httpclient-consumer</module>
     </modules>
 
 </project>

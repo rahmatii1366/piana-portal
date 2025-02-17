@@ -26,10 +26,6 @@
         <db.url>jdbc:postgresql://${db.host}:${db.port}/${db.name}</db.url>
     </properties>
 
-    <modules>
-        <module>endpoint-data</module>
-    </modules>
-
     <dependencies>
     </dependencies>
 

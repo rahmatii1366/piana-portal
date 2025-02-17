@@ -28,7 +28,8 @@
 
     <modules>
         <module>piana-spring-boot-bom</module>
-        <module>utilities</module>
+        <module>piana-utilities</module>
+        <module>piana-endpoint-solution</module>
         <module>piana-openidc</module>
         <module>piana-inquiry</module>
     </modules>

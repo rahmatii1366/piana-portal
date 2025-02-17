@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ir.piana.boot</groupId>
+        <artifactId>piana-spring-boot-bom</artifactId>
+        <version>3.4.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>ir.piana.boot.endpoint</groupId>
+    <artifactId>piana-endpoint-solution</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>piana-endpoint-solution</name>
+    <url>http://maven.apache.org</url>
+
+    <modules>
+        <module>endpoint-core</module>
+        <module>endpoint-data</module>
+        <module>endpoint-manager</module>
+        <module>endpoint-limiter</module>
+    </modules>
+
+    <properties>
+        <docker.allContainers>true</docker.allContainers>
+        <docker.maven.plugin>0.45.1</docker.maven.plugin>
+        <postgresql.image>docker.arvancloud.ir/postgres:latest</postgresql.image>
+        <db.host>localhost</db.host>
+        <db.port>3033</db.port>
+        <db.name>piana-endpoint-compile-db</db.name>
+        <db.username>user</db.username>
+        <db.password>pass</db.password>
+        <!--suppress UnresolvedMavenProperty -->
+        <db.url>jdbc:postgresql://${db.host}:${db.port}/${db.name}</db.url>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.plugin}</version>
+                <inherited>false</inherited>
+
+                <executions>
+                    <execution>
+                        <id>delete-before-generate-sources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>start-after-initialize</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <images>
+                        <image>
+                            <name>${postgresql.image}</name>
+                            <run>
+                                <containerNamePattern>oidc-fabric8</containerNamePattern>
+                                <ports>
+                                    <port>${db.port}:5432</port>
+                                </ports>
+                                <env>
+                                    <POSTGRES_DB>${db.name}</POSTGRES_DB>
+                                    <POSTGRES_USER>${db.username}</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>${db.password}</POSTGRES_PASSWORD>
+                                </env>
+                                <log>
+                                    <enabled>true</enabled>
+                                    <prefix>POSTGRESQL |</prefix>
+                                    <color>cyan</color>
+                                </log>
+                                <wait>
+                                    <time>5000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,9 +1,9 @@
 package ir.piana.dev.inquiry.publisher.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import ir.piana.boot.inquiry.common.dto.ResponseDto;
 import ir.piana.boot.inquiry.thirdparty.insurance.vehicle.InsuranceVehicleThirdPartyService;
 import ir.piana.boot.utils.errorprocessor.ApiExceptionService;
+import ir.piana.boot.utils.errorprocessor.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

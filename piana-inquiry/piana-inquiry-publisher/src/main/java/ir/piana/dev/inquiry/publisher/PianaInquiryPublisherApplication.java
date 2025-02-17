@@ -1,6 +1,6 @@
 package ir.piana.dev.inquiry.publisher;
 
-import ir.piana.boot.inquiry.common.httpclient.InternalRestClientBeanCreatorConfig;
+import ir.piana.boot.utils.restclientconfigurable.InternalRestClientBeanCreatorConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

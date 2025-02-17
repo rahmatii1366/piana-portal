@@ -24,8 +24,8 @@
         </dependency>
 
         <dependency>
-            <groupId>ir.piana.boot.inquiry</groupId>
-            <artifactId>commons</artifactId>
+            <groupId>ir.piana.boot.utils</groupId>
+            <artifactId>jedis-utility</artifactId>
             <version>1.0</version>
         </dependency>
 

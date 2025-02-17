@@ -26,14 +26,8 @@
         </dependency>
 
         <dependency>
-            <groupId>ir.piana.boot.inquiry</groupId>
-            <artifactId>commons</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ir.piana.boot.inquiry</groupId>
-            <artifactId>httpclient-consumer</artifactId>
+            <groupId>ir.piana.boot.endpoint</groupId>
+            <artifactId>endpoint-limiter</artifactId>
             <version>1.0</version>
         </dependency>
 
