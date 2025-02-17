@@ -16,6 +16,7 @@ import ir.piana.boot.utils.jedisutils.JedisPool;
 import ir.piana.boot.utils.natsclient.NatsConfig;
 import ir.piana.boot.utils.restclientconfigurable.HttpEndpointDto;
 import ir.piana.boot.utils.scheduler.FixedIntervalScheduler;
+import lombok.Setter;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -35,6 +36,9 @@ public class EndpointDBScheduler extends FixedIntervalScheduler {
     private final Connection connection;
     private final ObjectMapper objectMapper;
     private final JedisPool jedisPool;
+
+    @Setter
+    private String publishTo = null;
 
     private List<HttpEndpointDto> httpClientProperties;
 
@@ -149,97 +153,11 @@ public class EndpointDBScheduler extends FixedIntervalScheduler {
             /*String body = objectMapper.writeValueAsString(
                     Endpoints.builder().httpClientProperties(httpClientProperties).build());*/
             jedisPool.setKey("endpoints", body);
-            connection.publish("piana.inquiry.endpoint.refreshed", body.getBytes());
+            if (publishTo != null)
+                connection.publish(publishTo, body.getBytes());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-        /*clients.stream().map(client -> {
-            try {
-                PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
-                if (client.isSecure()) {
-                    List<TLS> tlsVersions = null;
-                    tlsVersions = client.tlsVersions().stream().map(TLS::valueOf).toList();
-                    if (client.trustStore() == null || client.trustStore().isEmpty()) {
-                        builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
-                                .setSslContext(SSLContexts.custom()
-                                        .loadTrustMaterial(null, (X509Certificate[] chain, String authType) -> true)
-                                        .build())
-                                .setTlsVersions(tlsVersions.toArray(new TLS[0]))
-                                .build());
-                    } else {
-                        KeyStore ks = KeyStore.getInstance("JKS");
-                        if (client.trustStore().startsWith("classpath:")) {
-                            Resource resource = resourceLoader.getResource(client.trustStore());
-                            ks.load(resource.getInputStream(), client.trustStorePassword().toCharArray());
-                        } else {
-                            File trustFile = new File(client.trustStore());
-                            ks.load(new FileInputStream(trustFile), client.trustStorePassword().toCharArray());
-                        }
-
-                        builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
-                                .setSslContext(SSLContexts.custom()
-                                        .loadTrustMaterial(
-                                                ks,
-                                                (X509Certificate[] chain, String authType) -> true)
-                                        .build())
-                                .setTlsVersions(tlsVersions.toArray(new TLS[0]))
-                                .build());
-                        //ToDo load from trustStore
-                    }
-                }
-
-                builder.setDefaultSocketConfig(SocketConfig.custom()
-                                .setSoTimeout(Timeout.ofSeconds(
-                                        Optional.ofNullable(client.soTimeout()).orElse(20L)))
-                                .build())
-                        .setPoolConcurrencyPolicy(Optional.ofNullable(client.poolConcurrencyPolicy())
-                                .map(PoolConcurrencyPolicy::valueOf).orElse(PoolConcurrencyPolicy.STRICT))
-                        .setConnPoolPolicy(Optional.ofNullable(client.poolReusePolicy())
-                                .map(PoolReusePolicy::valueOf).orElse(PoolReusePolicy.LIFO))
-                        .setDefaultConnectionConfig(ConnectionConfig.custom()
-                                .setSocketTimeout(Timeout.ofSeconds(
-                                        Optional.ofNullable(client.socketTimeout()).orElse(30L)))
-                                .setConnectTimeout(Timeout.ofSeconds(
-                                        Optional.ofNullable(client.connectionTimeout()).orElse(30L)))
-                                .setTimeToLive(Timeout.ofSeconds(
-                                        Optional.ofNullable(client.timeToLive()).orElse(600L)))
-                                .build())
-                        .build();
-                Logger log = LoggerFactory.getLogger(client.name());
-                final CloseableHttpClient httpClient = HttpClientBuilder
-                        .create()
-                        .setConnectionManager(builder.build())
-                        .build();
-
-                HttpComponentsClientHttpRequestFactory requestFactory =
-                        new HttpComponentsClientHttpRequestFactory();
-
-                requestFactory.setHttpClient(httpClient);
-
-                RestClient restClient = null;
-                RestClient.Builder restClientBuilder = RestClient.builder()
-                        .requestFactory(requestFactory)
-                        .baseUrl((client.isSecure() ? "https://" : "http://") +
-                                client.host() + ":" + client.port() + "/" +
-                                (client.baseUrl() != null ? client.baseUrl() + "/" : ""));
-
-                if (client.debugMode) {
-                    restClientBuilder.requestInterceptor((request, body, execution) -> {
-                        logRequest(log, request, body);
-                        var response = new BufferingClientHttpResponseWrapper(execution.execute(request, body));
-                        logResponse(log, request, response);
-                        response.reset();
-                        return response;
-                    });
-                }
-
-                restClient = restClientBuilder.build();
-                applicationContext.registerBean(client.name(), RestClient.class, () -> restClient);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });*/
     }
 
     public List<HttpEndpointDto> getEndpoints() {

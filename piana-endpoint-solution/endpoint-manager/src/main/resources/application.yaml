@@ -19,6 +19,8 @@ piana:
       readyToStart: true
       schedulerLockName: 'EndpointManagerJob'
       periodUnit: "Seconds"
+      publishTo: piana.inquiry.endpoint.refreshed
+
   tools:
     internal-client:
       enabled: false
