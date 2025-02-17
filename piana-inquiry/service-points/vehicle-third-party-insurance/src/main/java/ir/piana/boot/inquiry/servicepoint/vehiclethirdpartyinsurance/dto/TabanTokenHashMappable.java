@@ -1,9 +1,11 @@
-package ir.piana.boot.inquiry.thirdparty.insurance.vehicle;
+package ir.piana.boot.inquiry.servicepoint.vehiclethirdpartyinsurance.dto;
 
 import ir.piana.boot.utils.jedisutils.JedisPool;
 import ir.piana.boot.utils.jedisutils.RedisHashMappable;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TabanTokenHashMappable implements RedisHashMappable {
     private String accessToken;

@@ -50,4 +50,9 @@
             <artifactId>bucket4j-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+        </plugins>
+    </build>
 </project>

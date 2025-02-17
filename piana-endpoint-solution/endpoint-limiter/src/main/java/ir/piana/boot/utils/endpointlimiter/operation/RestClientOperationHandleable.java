@@ -15,15 +15,18 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class RestClientOperationHandleable<T, R> implements Function<T, R> {
-    protected final RestClient restClient;
-    /*private final EndpointLimitationDto limitationDto;*/
+    private final ApplicationContext applicationContext;
     private final List<Bucket> bucketSequentialList = new ArrayList<>();
-    private int executionOrder;
+    private int executionOrder = 0;
 
     public RestClientOperationHandleable(
-            ApplicationContext applicationContext,
-            ServicePointCollectionDto servicePointCollectionDto) {
-        restClient = applicationContext.getBean(servicePointName() + "_" + endpointName(), RestClient.class);
+            ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    protected RestClient getRestClient() {
+        return applicationContext.getBean(
+                servicePointName() + "_" + endpointName(), RestClient.class);
     }
 
     //ToDo It must be checked to make sure it works properly.

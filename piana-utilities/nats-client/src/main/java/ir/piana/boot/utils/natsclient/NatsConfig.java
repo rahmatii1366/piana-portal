@@ -22,14 +22,14 @@ public class NatsConfig {
     @Value("${piana.tools.nats.status:disable}")
     private String natsStatus;
     private final Handler handler;
-    private final List<MessageHandler<?>> messageHandlers;
+    private final List<MessageHandler> messageHandlers;
     private final GenericWebApplicationContext applicationContext;
 
 
     @Autowired
     public NatsConfig(
             GenericWebApplicationContext applicationContext,
-            Handler handler, List<MessageHandler<?>> messageHandlers) {
+            Handler handler, List<MessageHandler> messageHandlers) {
         this.applicationContext = applicationContext;
         this.handler = handler;
         this.messageHandlers = messageHandlers;

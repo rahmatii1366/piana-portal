@@ -7,6 +7,7 @@
 		<groupId>ir.piana.boot</groupId>
 		<artifactId>piana-spring-boot-bom</artifactId>
 		<version>3.4.2</version>
+		<relativePath/>
 	</parent>
 
 	<groupId>ir.piana.boot.openidc</groupId>
@@ -158,6 +159,20 @@
 				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

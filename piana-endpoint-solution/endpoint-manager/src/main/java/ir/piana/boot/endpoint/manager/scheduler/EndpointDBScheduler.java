@@ -13,9 +13,11 @@ import ir.piana.boot.endpoint.data.tables.ServicePoint;
 import ir.piana.boot.endpoint.data.tables.daos.EndpointDao;
 import ir.piana.boot.endpoint.data.tables.daos.ServicePointDao;
 import ir.piana.boot.utils.jedisutils.JedisPool;
+import ir.piana.boot.utils.natsclient.NatsConfig;
 import ir.piana.boot.utils.restclientconfigurable.HttpEndpointDto;
 import ir.piana.boot.utils.scheduler.FixedIntervalScheduler;
 import org.apache.hc.core5.http.ssl.TLS;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -141,49 +143,6 @@ public class EndpointDBScheduler extends FixedIntervalScheduler {
             }).toList();
             return new ServicePointDto(servicePointDto, endpoints);
         }).toList());
-
-
-        /*httpClientProperties = this.endpointDao.ctx().select(
-                        Endpoint.ENDPOINT.ID,
-                        Endpoint.ENDPOINT.NAME,
-                        Endpoint.ENDPOINT.IS_SECURE,
-                        Endpoint.ENDPOINT.IS_SECURE,
-                        Endpoint.ENDPOINT.HOST,
-                        Endpoint.ENDPOINT.PORT,
-                        Endpoint.ENDPOINT.BASE_URL,
-                        Endpoint.ENDPOINT.SO_TIMEOUT,
-                        Endpoint.ENDPOINT.CONNECTION_TIMEOUT,
-                        Endpoint.ENDPOINT.SOCKET_TIMEOUT,
-                        Endpoint.ENDPOINT.TIME_TO_LIVE,
-                        Endpoint.ENDPOINT.POOL_REUSE_POLICY,
-                        Endpoint.ENDPOINT.POOL_CONCURRENCY_POLICY,
-                        Endpoint.ENDPOINT.TRUST_STORE,
-                        Endpoint.ENDPOINT.TRUST_STORE_PASSWORD,
-                        Endpoint.ENDPOINT.UPDATE_ON,
-                        Endpoint.ENDPOINT.TLS_VERSIONS)
-                .from(Endpoint.ENDPOINT)
-                .where(Endpoint.ENDPOINT.DISABLED.eq(false))
-                .fetch(record ->
-                        new HttpClientProperties(
-                                record.get(Endpoint.ENDPOINT.ID),
-                                record.get(Endpoint.ENDPOINT.NAME),
-                                record.get(Endpoint.ENDPOINT.IS_SECURE),
-                                record.get(Endpoint.ENDPOINT.IS_SECURE),
-                                record.get(Endpoint.ENDPOINT.HOST),
-                                record.get(Endpoint.ENDPOINT.PORT),
-                                record.get(Endpoint.ENDPOINT.BASE_URL),
-                                record.get(Endpoint.ENDPOINT.SO_TIMEOUT).longValue(),
-                                record.get(Endpoint.ENDPOINT.CONNECTION_TIMEOUT).longValue(),
-                                record.get(Endpoint.ENDPOINT.SOCKET_TIMEOUT).longValue(),
-                                record.get(Endpoint.ENDPOINT.TIME_TO_LIVE).longValue(),
-                                record.get(Endpoint.ENDPOINT.POOL_REUSE_POLICY),
-                                record.get(Endpoint.ENDPOINT.POOL_CONCURRENCY_POLICY),
-                                record.get(Endpoint.ENDPOINT.TRUST_STORE),
-                                record.get(Endpoint.ENDPOINT.TRUST_STORE_PASSWORD),
-                                record.get(Endpoint.ENDPOINT.UPDATE_ON).getLong(ChronoField.MILLI_OF_SECOND),
-                                Arrays.stream(Optional.ofNullable(record.get(Endpoint.ENDPOINT.TLS_VERSIONS))
-                                        .orElse(TLS.V_1_3.name()).split(",")).toList())
-                );*/
 
         try {
             String body = objectMapper.writeValueAsString(servicePointCollection);

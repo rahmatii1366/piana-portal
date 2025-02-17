@@ -16,7 +16,6 @@
     </properties>
 
     <modules>
-        <module>insurance/taban</module>
         <module>post/gnaf</module>
     </modules>
 

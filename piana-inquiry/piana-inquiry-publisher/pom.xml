@@ -21,6 +21,11 @@
     <dependencies>
         <dependency>
             <groupId>ir.piana.boot.utils</groupId>
+            <artifactId>nats-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ir.piana.boot.utils</groupId>
             <artifactId>piana-web-error-processor</artifactId>
             <version>1.0</version>
         </dependency>
@@ -33,9 +38,16 @@
 
         <dependency>
             <groupId>ir.piana.boot.inquiry</groupId>
+            <artifactId>vehicle-third-party-insurance</artifactId>
+            <version>1.0</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>ir.piana.boot.inquiry</groupId>
             <artifactId>taban</artifactId>
             <version>1.0</version>
         </dependency>
+-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

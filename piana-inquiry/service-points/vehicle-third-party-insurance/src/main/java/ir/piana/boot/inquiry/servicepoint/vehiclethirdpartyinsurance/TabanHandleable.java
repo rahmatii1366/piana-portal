@@ -1,31 +1,32 @@
-package ir.piana.boot.inquiry.thirdparty.insurance.vehicle;
+package ir.piana.boot.inquiry.servicepoint.vehiclethirdpartyinsurance;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ir.piana.boot.inquiry.servicepoint.vehiclethirdpartyinsurance.dto.TabanTokenHashMappable;
+import ir.piana.boot.inquiry.servicepoint.vehiclethirdpartyinsurance.dto.VehicleThirdPartyInsuranceRequest;
+import ir.piana.boot.utils.endpointlimiter.operation.RestClientOperationHandleable;
 import ir.piana.boot.utils.errorprocessor.InternalServerErrorTypes;
 import ir.piana.boot.utils.jedisutils.JedisPool;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 @Component
-public class InsuranceVehicleThirdPartyService {
+class TabanHandleable<R>
+        extends RestClientOperationHandleable<VehicleThirdPartyInsuranceRequest, R> {
     private final ObjectMapper objectMapper;
     private final JedisPool jedisPool;
-    private final RestClient restClient;
 
     @Value("${piana.config.third-parties.taban.token}")
     private String token;
 
-    public InsuranceVehicleThirdPartyService(
-            @Lazy @Qualifier("taban") RestClient restClient,
+    public TabanHandleable(
+            ApplicationContext applicationContext,
             JedisPool jedisPool,
             ObjectMapper objectMapper) {
-        this.restClient = restClient;
+        super(applicationContext);
         this.jedisPool = jedisPool;
         this.objectMapper = objectMapper;
     }
@@ -34,7 +35,7 @@ public class InsuranceVehicleThirdPartyService {
         try {
             TabanTokenHashMappable redisHashMappable = jedisPool.getRedisHashMappable(TabanTokenHashMappable.class);
             if (redisHashMappable == null) {
-                redisHashMappable = restClient.post()
+                redisHashMappable = getRestClient().post()
                         .uri("token?grant_type=client_credentials")
 //                    .header("Postman-Token", "7c15e34c-00e2-4303-b69a-35308b3e2bae")
 //                    .header("User-Agent", "PostmanRuntime/7.37.3")
@@ -67,7 +68,7 @@ public class InsuranceVehicleThirdPartyService {
     public JsonNode getByVin(String vin, String productionYear) {
         try {
             TabanTokenHashMappable authToken = getAuthToken();
-            return restClient.post()
+            return getRestClient().post()
                     .uri("VSBV/1/api/ThirdPartyInsurance/SearchByVin")
                     .header("token", "Bearer " + authToken.getAccessToken())
                     .header(
@@ -84,5 +85,20 @@ public class InsuranceVehicleThirdPartyService {
         } catch (Throwable t) {
             throw InternalServerErrorTypes.INTERNAL_SERVER_ERROR.newException(t);
         }
+    }
+
+    @Override
+    protected String servicePointName() {
+        return "vehicle_third_party_insurance";
+    }
+
+    @Override
+    protected String endpointName() {
+        return "taban";
+    }
+
+    @Override
+    protected R doRequest(VehicleThirdPartyInsuranceRequest requestDto) {
+        return (R) getByVin(requestDto.vin(), requestDto.productionYear());
     }
 }

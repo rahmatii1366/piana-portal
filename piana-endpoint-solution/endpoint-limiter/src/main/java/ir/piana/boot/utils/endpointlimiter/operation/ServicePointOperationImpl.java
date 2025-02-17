@@ -1,3 +1,4 @@
+/*
 package ir.piana.boot.utils.endpointlimiter.operation;
 
 import ir.piana.boot.endpoint.dto.ServicePointDto;
@@ -6,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
-public final class ServicePointOperationImpl<T, R> implements ServicePointOperation<T, R> {
+final class ServicePointOperationImpl<T, R> implements ServicePointOperation<T, R> {
     private final ApplicationContext applicationContext;
     private final ServicePointDto servicePointDto;
     private final List<RestClientOperationHandleable<T, R>> operationHandleableList;
@@ -37,3 +38,4 @@ public final class ServicePointOperationImpl<T, R> implements ServicePointOperat
         throw InternalServerErrorTypes.NO_ACTIVE_ENDPOINT.newException();
     }
 }
+*/

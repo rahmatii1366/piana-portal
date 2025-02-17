@@ -5,13 +5,16 @@
         <groupId>ir.piana.boot.inquiry</groupId>
         <artifactId>piana-inquiry</artifactId>
         <version>1.0</version>
-        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>taban</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>service-points</artifactId>
+    <packaging>pom</packaging>
 
-    <name>thrid-party</name>
+    <modules>
+        <module>vehicle-third-party-insurance</module>
+    </modules>
+
+    <name>service-points</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -20,20 +23,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>ir.piana.boot.utils</groupId>
-            <artifactId>piana-web-error-processor</artifactId>
+            <groupId>ir.piana.boot.endpoint</groupId>
+            <artifactId>endpoint-limiter</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ir.piana.boot.utils</groupId>
-            <artifactId>jedis-utility</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
         </dependency>
     </dependencies>
 </project>

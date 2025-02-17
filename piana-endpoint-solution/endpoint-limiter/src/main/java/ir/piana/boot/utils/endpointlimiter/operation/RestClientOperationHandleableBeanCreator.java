@@ -3,7 +3,6 @@ package ir.piana.boot.utils.endpointlimiter.operation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.piana.boot.endpoint.dto.ServicePointCollectionDto;
-import ir.piana.boot.endpoint.dto.ServicePointDto;
 import ir.piana.boot.endpoint.mapper.ToHttpEndpointDto;
 import ir.piana.boot.utils.jedisutils.JedisPool;
 import ir.piana.boot.utils.natsclient.MessageHandler;
@@ -22,10 +21,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Component
-public class EndpointRestClientBeanCreatorConfig implements MessageHandler<ServicePointCollectionDto> {
-    private static Logger logger = LoggerFactory.getLogger(EndpointRestClientBeanCreatorConfig.class);
+@Slf4j
+public class RestClientOperationHandleableBeanCreator
+        implements MessageHandler<ServicePointCollectionDto, Object>,
+        RestClientOperationHandleableProvider {
+    private static Logger logger = LoggerFactory.getLogger(RestClientOperationHandleableBeanCreator.class);
 
     private final JedisPool jedisPool;
     private final ObjectMapper objectMapper;
@@ -35,7 +36,7 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
 
     private final Map<String, HttpEndpointDto> endpointMap = new LinkedHashMap<>();
 
-    public EndpointRestClientBeanCreatorConfig(
+    public RestClientOperationHandleableBeanCreator(
             JedisPool jedisPool,
             ObjectMapper objectMapper,
             GenericApplicationContext applicationContext,
@@ -61,7 +62,7 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
                             servicePointDto.name(), servicePointDto.endpoints()))
                     .flatMap(List::stream)
                     .toList();
-            refresh(list);
+            refreshRestClients(list);
             this.restClientOperationHandleables.forEach(
                     restClientOperationHandleable -> {
                         try {
@@ -106,8 +107,8 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
                         servicePointDto.name(), servicePointDto.endpoints()))
                 .flatMap(List::stream)
                 .toList();
-        refresh(list);
-        registerServicePointOperations(servicePointCollectionDto, restClientOperationHandleables);
+        refreshRestClients(list);
+//        registerServicePointOperations(servicePointCollectionDto, restClientOperationHandleables);
         this.restClientOperationHandleables.forEach(
                 restClientOperationHandleable -> {
                     try {
@@ -148,7 +149,7 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
         });
     }*/
 
-    public synchronized void refresh(List<HttpEndpointDto> httpClientPropertiesList) {
+    public synchronized void refreshRestClients(List<HttpEndpointDto> httpClientPropertiesList) {
         List<String> newClientNames = new ArrayList<>();
         httpClientPropertiesList.forEach(httpClientProperties -> {
                     newClientNames.add(httpClientProperties.getName());
@@ -186,7 +187,12 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
                 "ServicePointCollectionDto", ServicePointCollectionDto.class, () -> servicePointCollectionDto);
     }
 
-    public void registerServicePointOperations(
+    @Override
+    public RestClientOperationHandleable provide(String servicePointName, String endpointName) {
+        return null;
+    }
+
+    /*public void registerServicePointOperations(
             ServicePointCollectionDto servicePointCollectionDto,
             List<RestClientOperationHandleable> restClientOperationHandleableList) {
         for (ServicePointDto servicePoint : servicePointCollectionDto.servicePoints()) {
@@ -205,5 +211,5 @@ public class EndpointRestClientBeanCreatorConfig implements MessageHandler<Servi
             applicationContext.registerBean(
                     servicePoint.name(), ServicePointOperation.class, () -> servicePointOperation);
         }
-    }
+    }*/
 }
