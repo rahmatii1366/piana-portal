@@ -11,10 +11,9 @@ import org.springframework.web.client.RestClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
-public abstract class RestClientOperationHandleable<T, R> implements Function<T, R> {
+public abstract class RestClientOperationHandleable<T extends BaseServicePointRequest, R> implements Function<T, R> {
     private final ApplicationContext applicationContext;
     private final List<Bucket> bucketSequentialList = new ArrayList<>();
     private int executionOrder = 0;
