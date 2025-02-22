@@ -7,20 +7,24 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>endpoint-manager</artifactId>
+    <artifactId>service-point-operation</artifactId>
     <packaging>jar</packaging>
 
-    <name>endpoint-manager</name>
+    <name>service-point</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>ir.piana.boot.endpoint</groupId>
-            <artifactId>endpoint-data</artifactId>
+            <artifactId>endpoint-core</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ir.piana.boot.endpoint.sample</groupId>
+            <artifactId>sample-operation</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

@@ -1,0 +1,19 @@
+server:
+  port: 9000
+piana:
+  tools:
+    endpoints:
+      names:
+        - sample
+spring:
+  application:
+    name: sample-starter
+  messages:
+    basename: messages/endpoint-messages
+  datasource:
+    url: 'jdbc:postgresql://localhost:15433/sample_starter_db'
+    username: 'user'
+    password: 'pass'
+    driverClassName: 'org.postgresql.Driver'
+    hikari:
+      maximum-pool-size: 40

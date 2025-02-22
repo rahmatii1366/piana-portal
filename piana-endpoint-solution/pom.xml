@@ -15,13 +15,13 @@
 
     <name>piana-endpoint-solution</name>
     <url>http://maven.apache.org</url>
-
     <modules>
         <module>endpoint-core</module>
         <module>endpoint-data</module>
+        <module>service-point-operation</module>
+        <module>endpoint-sample</module>
+        <module>endpoint-operation</module>
         <module>endpoint-manager</module>
-        <module>endpoint-limiter</module>
-        <module>service-point</module>
     </modules>
 
     <properties>

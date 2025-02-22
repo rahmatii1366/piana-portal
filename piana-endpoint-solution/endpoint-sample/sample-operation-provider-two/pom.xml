@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ir.piana.boot.endpoint</groupId>
-        <artifactId>piana-endpoint-solution</artifactId>
+        <groupId>ir.piana.boot.endpoint.sample</groupId>
+        <artifactId>endpoint-sample</artifactId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>endpoint-manager</artifactId>
+    <artifactId>sample-operation-provider-two</artifactId>
     <packaging>jar</packaging>
 
-    <name>endpoint-manager</name>
+    <name>sample-operation-provider-two</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -19,13 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>ir.piana.boot.endpoint</groupId>
-            <artifactId>endpoint-data</artifactId>
+            <groupId>ir.piana.boot.endpoint.sample</groupId>
+            <artifactId>sample-operation</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
 </project>

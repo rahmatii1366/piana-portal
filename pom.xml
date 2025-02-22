@@ -32,6 +32,7 @@
         <module>piana-endpoint-solution</module>
         <module>piana-openidc</module>
         <module>piana-inquiry</module>
+        <module>piana-endpoint-solution</module>
     </modules>
 
     <properties>

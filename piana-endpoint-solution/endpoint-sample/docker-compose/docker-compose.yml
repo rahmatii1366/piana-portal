@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  sample-starter-postgres:
+    container_name: sample-starter-postgres
+    image: docker.arvancloud.ir/postgres:latest
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'pass'
+      POSTGRES_DB: 'sample_starter_db'
+    volumes:
+      - 'sample-starter-postgres-data:/var/lib/postgresql/data'
+    ports:
+      - '15433:5432'
+    expose:
+      - '15433'
+    networks:
+      sample-starter-net:
+        ipv4_address: 172.25.0.2
+
+  sample-starter-redis:
+    image: docker.arvancloud.ir/redis:latest
+    container_name: sample-starter-redis-master
+    hostname: redis-master
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/master:/data
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--repl-diskless-load",
+        "on-empty-db",
+        "--replica-announce-ip",
+        "${HOST_IP}",
+        "--replica-announce-port",
+        "6379",
+        "--protected-mode",
+        "no"
+      ]
+    networks:
+      sample-starter-net:
+        ipv4_address: 172.25.0.3
+
+  sample-starter-redisinsight:
+    image: docker.arvancloud.ir/redis/redisinsight:latest
+    container_name: sample-starter-redisinsight
+    ports:
+      - "5540:5540"
+    networks:
+      sample-starter-net:
+        ipv4_address: 172.25.0.9
+
+  sample-starter-nats:
+    container_name: sample-starter-nats
+    image: nats:2
+    ports:
+      - 127.0.0.1:4222:4222
+    networks:
+      sample-starter-net:
+        ipv4_address: 172.25.0.10
+
+volumes:
+  sample-starter-postgres-data:
+
+networks:
+  sample-starter-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
