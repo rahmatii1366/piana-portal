@@ -20,6 +20,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>ir.piana.boot.endpoint</groupId>
+            <artifactId>endpoint-core</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>

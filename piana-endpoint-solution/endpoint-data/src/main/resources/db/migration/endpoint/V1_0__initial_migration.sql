@@ -100,11 +100,12 @@ CREATE TABLE endpoint_call_log (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
     service_point_id            BIGINT          NOT NULL,
     endpoint_id                 BIGINT          NOT NULL,
-    reference_id                VARCHAR(32)     NOT NULL,
+    reference_id                CHAR(32)        NOT NULL,
     merchant_id                 BIGINT,
     requester_id                BIGINT,
     before_call                 BOOLEAN         NOT NULL DEFAULT false,
+    request_body                CHAR(1024),
     response_status_code        INT,
-    response_body               INT,
+    response_body               CHAR(1024),
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

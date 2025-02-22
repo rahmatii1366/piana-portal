@@ -152,6 +152,97 @@ public class RestClientBuilderUtils {
         }
     }
 
+    public RestClient createRestClient(
+            HttpEndpointDto httpEndpointDto) {
+        try {
+            PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
+            if (httpEndpointDto.isSecure()) {
+                List<TLS> tlsVersions = null;
+                List<String> tlsVersionStrings = httpEndpointDto.getTlsVersions();
+                if (tlsVersionStrings != null && !tlsVersionStrings.isEmpty()) {
+                    tlsVersions = tlsVersionStrings.stream().map(TLS::valueOf).toList();
+                } else {
+                    tlsVersions = List.of(TLS.V_1_3);
+                }
+                if (httpEndpointDto.getTrustStore() == null || httpEndpointDto.getTrustStore().isEmpty()) {
+                    builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
+                            .setSslContext(SSLContexts.custom()
+                                    .loadTrustMaterial(null, (X509Certificate[] chain, String authType) -> true)
+                                    .build())
+                            .setTlsVersions(tlsVersions.toArray(new TLS[0]))
+                            .build());
+                } else {
+                    KeyStore ks = KeyStore.getInstance("JKS");
+                    if (httpEndpointDto.getTrustStore().startsWith("classpath:")) {
+                        Resource resource = resourceLoader.getResource(httpEndpointDto.getTrustStore());
+                        ks.load(resource.getInputStream(), httpEndpointDto.getTrustStorePassword().toCharArray());
+                    } else {
+                        File trustFile = new File(httpEndpointDto.getTrustStore());
+                        ks.load(new FileInputStream(trustFile), httpEndpointDto.getTrustStorePassword().toCharArray());
+                    }
+
+                    builder.setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
+                            .setSslContext(SSLContexts.custom()
+                                    .loadTrustMaterial(
+                                            ks,
+                                            (X509Certificate[] chain, String authType) -> true)
+                                    .build())
+                            .setTlsVersions(tlsVersions.toArray(new TLS[0]))
+                            .build());
+                    //ToDo load from trustStore
+                }
+            }
+
+            builder.setDefaultSocketConfig(SocketConfig.custom()
+                            .setSoTimeout(Timeout.ofSeconds(
+                                    Optional.ofNullable(httpEndpointDto.getSoTimeout()).orElse(20L)))
+                            .build())
+                    .setPoolConcurrencyPolicy(Optional.ofNullable(httpEndpointDto.getPoolConcurrencyPolicy())
+                            .map(PoolConcurrencyPolicy::valueOf).orElse(PoolConcurrencyPolicy.STRICT))
+                    .setConnPoolPolicy(Optional.ofNullable(httpEndpointDto.getPoolReusePolicy())
+                            .map(PoolReusePolicy::valueOf).orElse(PoolReusePolicy.LIFO))
+                    .setDefaultConnectionConfig(ConnectionConfig.custom()
+                            .setSocketTimeout(Timeout.ofSeconds(
+                                    Optional.ofNullable(httpEndpointDto.getSocketTimeout()).orElse(30L)))
+                            .setConnectTimeout(Timeout.ofSeconds(
+                                    Optional.ofNullable(httpEndpointDto.getConnectionTimeout()).orElse(30L)))
+                            .setTimeToLive(Timeout.ofSeconds(
+                                    Optional.ofNullable(httpEndpointDto.getTimeToLive()).orElse(600L)))
+                            .build())
+                    .build();
+            Logger log = LoggerFactory.getLogger(httpEndpointDto.getName());
+            final CloseableHttpClient httpClient = HttpClientBuilder
+                    .create()
+                    .setConnectionManager(builder.build())
+                    .build();
+
+            HttpComponentsClientHttpRequestFactory requestFactory =
+                    new HttpComponentsClientHttpRequestFactory();
+
+            requestFactory.setHttpClient(httpClient);
+
+            RestClient.Builder restClientBuilder = RestClient.builder()
+                    .requestFactory(requestFactory)
+                    .baseUrl((httpEndpointDto.isSecure() ? "https://" : "http://") +
+                            httpEndpointDto.getHost() + ":" + httpEndpointDto.getPort() + "/" +
+                            (httpEndpointDto.getBaseUrl() != null ? httpEndpointDto.getBaseUrl() + "/" : ""));
+            if (httpEndpointDto.isDebugMode()) {
+                restClientBuilder.requestInterceptor((request, body, execution) -> {
+                    logRequest(log, request, body);
+                    var response = new BufferingClientHttpResponseWrapper(execution.execute(request, body));
+                    logResponse(log, request, response);
+                    response.reset();
+                    return response;
+                });
+            }
+            RestClient restClient = restClientBuilder.build();
+            logger.info("client by name {} created", httpEndpointDto.getName());
+            return restClient;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /*static RestClient registerRestClient(
             GenericWebApplicationContext applicationContext,
             ResourceLoader resourceLoader,

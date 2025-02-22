@@ -1,4 +1,4 @@
-package ir.piana.boot.utils.endpointlimiter.operation;
+package ir.piana.boot.endpoint.servicepoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,15 +24,11 @@ import java.util.Map;
 @Component
 @Slf4j
 public class RestClientOperationHandleableBeanCreator
-        implements MessageHandler<ChangedServicePointCollectionDto, Object>,
-        RestClientOperationHandleableProvider {
-    private static Logger logger = LoggerFactory.getLogger(RestClientOperationHandleableBeanCreator.class);
-
+        implements MessageHandler<ChangedServicePointCollectionDto, Object> {
     private final JedisPool jedisPool;
     private final ObjectMapper objectMapper;
     private final GenericApplicationContext applicationContext;
     private final RestClientBuilderUtils restClientBuilderUtils;
-    private final List<RestClientOperationHandleable> restClientOperationHandleables;
 
     private final Map<String, HttpEndpointDto> endpointMap = new LinkedHashMap<>();
 
@@ -40,13 +36,11 @@ public class RestClientOperationHandleableBeanCreator
             JedisPool jedisPool,
             ObjectMapper objectMapper,
             GenericApplicationContext applicationContext,
-            RestClientBuilderUtils restClientBuilderUtils,
-            List<RestClientOperationHandleable> restClientOperationHandleables) {
+            RestClientBuilderUtils restClientBuilderUtils) {
         this.jedisPool = jedisPool;
         this.objectMapper = objectMapper;
         this.applicationContext = applicationContext;
         this.restClientBuilderUtils = restClientBuilderUtils;
-        this.restClientOperationHandleables = restClientOperationHandleables;
     }
 
     @PostConstruct

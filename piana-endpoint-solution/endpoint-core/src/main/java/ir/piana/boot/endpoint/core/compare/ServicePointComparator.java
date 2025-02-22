@@ -1,6 +1,6 @@
-package ir.piana.boot.endpoint.compare;
+package ir.piana.boot.endpoint.core.compare;
 
-import ir.piana.boot.endpoint.dto.*;
+import ir.piana.boot.endpoint.core.dto.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

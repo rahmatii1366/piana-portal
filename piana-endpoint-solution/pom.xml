@@ -21,6 +21,7 @@
         <module>endpoint-data</module>
         <module>endpoint-manager</module>
         <module>endpoint-limiter</module>
+        <module>service-point</module>
     </modules>
 
     <properties>

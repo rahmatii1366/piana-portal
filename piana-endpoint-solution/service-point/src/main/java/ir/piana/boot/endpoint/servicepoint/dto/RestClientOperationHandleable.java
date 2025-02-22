@@ -1,10 +1,11 @@
-package ir.piana.boot.utils.endpointlimiter.operation;
+package ir.piana.boot.endpoint.servicepoint.dto;
 
 import io.github.bucket4j.Bucket;
 import ir.piana.boot.endpoint.core.dto.EndpointDto;
 import ir.piana.boot.endpoint.core.dto.EndpointLimitationDto;
 import ir.piana.boot.endpoint.core.dto.ServicePointDto;
 import ir.piana.boot.endpoint.core.service.EndpointLogService;
+import ir.piana.boot.endpoint.servicepoint.restop.RestLimitationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.client.RestClient;
 
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class RestClientOperationHandleable<T extends BaseServicePointRequest, R> implements Function<T, R> {
+public abstract class RestClientOperationHandleable<T extends BaseServicePointRequest, R>
+        implements Function<T, R> {
     private final ApplicationContext applicationContext;
     private final EndpointLogService endpointLogService;
     private final List<Bucket> bucketSequentialList = new ArrayList<>();
@@ -166,7 +168,7 @@ public abstract class RestClientOperationHandleable<T extends BaseServicePointRe
     @Override
     public final R apply(T requestDto) {
         if (!checkLimitation())
-            throw new LimitationException();
+            throw new RestLimitationException();
         BaseServicePointRequest baseServicePointRequest = (BaseServicePointRequest) requestDto;
         endpointLogService.beforeLog(
                 servicePointId, endpointId,

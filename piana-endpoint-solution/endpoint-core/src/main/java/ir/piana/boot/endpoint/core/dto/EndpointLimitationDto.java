@@ -1,4 +1,4 @@
-package ir.piana.boot.endpoint.dto;
+package ir.piana.boot.endpoint.core.dto;
 
 public record EndpointLimitationDto(
         String startAt,

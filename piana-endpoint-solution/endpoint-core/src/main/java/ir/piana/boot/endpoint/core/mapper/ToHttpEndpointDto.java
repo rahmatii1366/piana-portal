@@ -1,6 +1,6 @@
-package ir.piana.boot.endpoint.mapper;
+package ir.piana.boot.endpoint.core.mapper;
 
-import ir.piana.boot.endpoint.dto.EndpointDto;
+import ir.piana.boot.endpoint.core.dto.EndpointDto;
 import ir.piana.boot.utils.restclientconfigurable.HttpEndpointDto;
 
 import java.util.List;

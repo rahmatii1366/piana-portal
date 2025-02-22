@@ -7,10 +7,10 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>endpoint-core</artifactId>
+    <artifactId>service-point</artifactId>
     <packaging>jar</packaging>
 
-    <name>endpoint-core</name>
+    <name>service-point</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -19,8 +19,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>ir.piana.boot.endpoint</groupId>
+            <artifactId>endpoint-core</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>ir.piana.boot.utils</groupId>
-            <artifactId>restclient-configurable</artifactId>
+            <artifactId>nats-client</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
