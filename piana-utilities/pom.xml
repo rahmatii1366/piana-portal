@@ -30,6 +30,7 @@
 <!--        <module>endpoint-handler</module>-->
         <module>piana-scheduler</module>
         <module>restclient-configurable</module>
+        <module>piana-flyway</module>
     </modules>
 
     <build>

@@ -1,6 +1,6 @@
 package ir.piana.boot.endpoint.manager.dto;
 
-public record EndpointInfo(
+public record ServiceInfo(
         long id,
         String name,
         String description

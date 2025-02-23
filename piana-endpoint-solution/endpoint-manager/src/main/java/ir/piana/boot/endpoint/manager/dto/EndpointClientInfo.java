@@ -7,15 +7,13 @@ public record EndpointClientInfo(
         String clientId,
         String secretKey,
         String jsonCredential,
-        int limitationInTps,
-        int limitationInMinute,
-        int limitationInHour,
-        int limitationInDay,
-        int limitationInWeek,
-        int limitationInMonth,
-        int limitationInYear,
-        int limitationInTotal,
-        int disabled,
-        int createOn
+        Integer limitationInTps,
+        Integer limitationInMinute,
+        Integer limitationInHour,
+        Integer limitationInDay,
+        Integer limitationInWeek,
+        Integer limitationInMonth,
+        Integer limitationInYear,
+        Integer limitationInTotal
 ) {
 }

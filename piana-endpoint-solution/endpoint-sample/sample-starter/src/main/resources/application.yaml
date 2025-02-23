@@ -2,9 +2,13 @@ server:
   port: 9000
 piana:
   tools:
-    endpoints:
-      names:
-        - sample
+    endpoint-solution:
+      enabled: true
+      endpoints:
+        - sample1
+        - sample2
+      services:
+        - insurance_vehicle_third_party_inquiry
 spring:
   application:
     name: sample-starter
@@ -17,3 +21,6 @@ spring:
     driverClassName: 'org.postgresql.Driver'
     hikari:
       maximum-pool-size: 40
+
+  flyway:
+    enabled: false

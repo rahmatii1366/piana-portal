@@ -19,9 +19,9 @@
         <module>endpoint-core</module>
         <module>endpoint-data</module>
         <module>service-point-operation</module>
-        <module>endpoint-sample</module>
         <module>endpoint-operation</module>
         <module>endpoint-manager</module>
+        <module>endpoint-sample</module>
     </modules>
 
     <properties>

@@ -15,7 +15,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <db.schema>endpoint_schema</db.schema>
+        <db.schema>endpoints</db.schema>
     </properties>
 
     <dependencies>

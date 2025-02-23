@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class EndpointManager {
-    private final List<RestClientManagerImpl> restClientManagers;
-
-
+public class RestClientManagerHolder {
+    private final List<RestClientManagerImpl> restClientManagerList;
 }

@@ -21,7 +21,10 @@ CREATE TABLE service (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
     name                        varchar(64)     NOT NULL,
     description                 varchar(256),
+    logical_deletion            BOOLEAN         NOT NULL DEFAULT false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
+--    CONSTRAINT service_pk PRIMARY KEY(name, create_on),
     CONSTRAINT service_f_name_uk UNIQUE (name)
 );
 
@@ -31,8 +34,10 @@ CREATE TABLE endpoint (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
     name                        varchar(64)     NOT NULL,
     description                 varchar(256),
-    disabled                    BOOLEAN         NOT NULL default true,
+    logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
+--    CONSTRAINT endpoint_pk PRIMARY KEY(name, create_on),
     CONSTRAINT endpoint_f_name_uk UNIQUE (name)
 );
 
@@ -45,17 +50,19 @@ CREATE TABLE endpoint_api (
     method                      varchar(8)      NOT NULL,
     url                         varchar(256)    NOT NULL,
     description                 varchar(256),
-    disabled                    BOOLEAN         NOT NULL default true,
+    logical_deletion            BOOLEAN         NOT NULL default true,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
+--    CONSTRAINT endpoint_api_pk PRIMARY KEY(endpoint_name, service_name, create_on),
     CONSTRAINT endpoint_api_f_method_url_uk UNIQUE (method, url),
-    CONSTRAINT endpoint_api_f_endpoint_id_service_id_uk UNIQUE (endpoint_id, service_id),
-    CONSTRAINT endpoint_api_f_endpoint_id_fk foreign key(endpoint_id) REFERENCES endpoint (id)
+    CONSTRAINT endpoint_api_f_endpoint_id_fk foreign key(endpoint_id) REFERENCES endpoint (id),
+    CONSTRAINT endpoint_api_f_service_id_fk foreign key(service_id) REFERENCES service (id)
 );
 
 ALTER SEQUENCE "endpoint_api_id_seq" RESTART WITH 100;
 
 CREATE TABLE endpoint_network (
-    id                          BIGSERIAL       NOT NULL PRIMARY KEY,
+    id                          BIGSERIAL       NOT NULL primary key,
     endpoint_id                 BIGINT          NOT NULL,
     is_debug_mode               BOOLEAN         NOT NULL default false,
     is_secure                   BOOLEAN         NOT NULL default false,
@@ -71,9 +78,11 @@ CREATE TABLE endpoint_network (
     trust_store                 varchar(256),
     trust_store_password        varchar(256),
     tls_versions                varchar(64)     NOT NULL default 'V_1_3',
-    disabled                    BOOLEAN         NOT NULL default true,
+    logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
     CONSTRAINT endpoint_network_f_endpoint_id_fk foreign key(endpoint_id) REFERENCES endpoint (id)
+--    CONSTRAINT endpoint_network_pk PRIMARY KEY(name, create_on)
 );
 
 ALTER SEQUENCE "endpoint_network_id_seq" RESTART WITH 100;
@@ -93,9 +102,9 @@ CREATE TABLE endpoint_client (
     limitation_in_month         INT,
     limitation_in_year          INT,
     limitation_in_total         INT,
-    disabled                    BOOLEAN         NOT NULL default true,
+    logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT endpoint_client_f_endpoint_id_client_id_create_on_uk UNIQUE (endpoint_id, client_id, create_on),
+    update_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT endpoint_client_f_endpoint_id_fk foreign key(endpoint_id) REFERENCES endpoint (id),
     CONSTRAINT endpoint_client_f_endpoint_network_id_fk foreign key(endpoint_network_id) REFERENCES endpoint_network (id)
 );
@@ -106,8 +115,9 @@ CREATE TABLE merchant (
     id                          BIGSERIAL       NOT NULL PRIMARY KEY,
     name                        varchar(64)     NOT NULL,
     description                 varchar(256),
-    disabled                    BOOLEAN         NOT NULL default true,
+    logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
     CONSTRAINT merchant_f_name_uk UNIQUE (name)
 );
 
@@ -116,8 +126,9 @@ ALTER SEQUENCE "merchant_id_seq" RESTART WITH 100;
 CREATE TABLE merchant_client (
     merchant_id                 BIGINT          NOT NULL,
     endpoint_client_id          BIGINT          NOT NULL,
-    disabled                    BOOLEAN         NOT NULL default false,
+    logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
     CONSTRAINT merchant_client_pk PRIMARY KEY(merchant_id, endpoint_client_id),
     CONSTRAINT merchant_client_f_merchant_id_endpoint_client_id_create_on_uk UNIQUE (merchant_id, endpoint_client_id, create_on),
     CONSTRAINT merchant_client_f_merchant_id_fk FOREIGN KEY (merchant_id) REFERENCES merchant(id),

@@ -1,12 +1,8 @@
 package ir.piana.boot.endpoint.manager.dto;
 
-import jakarta.websocket.Endpoint;
-
-import java.sql.Timestamp;
-
 public record EndpointNetworkInfo(
         long id,
-        Endpoint endpoint,
+        EndpointInfo endpoint,
         boolean isDebugMode,
         boolean isSecure,
         String host,
@@ -20,8 +16,6 @@ public record EndpointNetworkInfo(
         String poolConcurrencyPolicy,
         String trustStore,
         String trustStorePassword,
-        String tlsVersions,
-        boolean disabled,
-        Timestamp createOn
+        String tlsVersions
 ) {
 }
