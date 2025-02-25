@@ -1,7 +1,7 @@
 package ir.piana.boot.endpoint.sample.controller;
 
 import ir.piana.boot.endpoint.manager.EndpointsProperties;
-import ir.piana.boot.endpoint.sample.service.VehicleInfoResponse;
+import ir.piana.boot.endpoint.sample.service.vehicleinfo.VehicleInfoResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

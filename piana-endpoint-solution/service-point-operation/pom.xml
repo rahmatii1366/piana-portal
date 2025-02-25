@@ -10,7 +10,7 @@
     <artifactId>service-point-operation</artifactId>
     <packaging>jar</packaging>
 
-    <name>service-point</name>
+    <name>service-point-operation</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>ir.piana.boot.endpoint.sample</groupId>
-            <artifactId>sample-operation</artifactId>
+            <artifactId>vehicle-info</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

@@ -123,13 +123,42 @@ CREATE TABLE merchant (
 
 ALTER SEQUENCE "merchant_id_seq" RESTART WITH 100;
 
+CREATE TABLE service_order_group(
+    id                          BIGSERIAL       NOT NULL PRIMARY KEY,
+    service_id                  BIGINT          NOT NULL,
+    merchant_id                 BIGINT,
+    name                        varchar(64)     NOT NULL,
+    description                 varchar(256),
+    logical_deletion            BOOLEAN         NOT NULL default false,
+    create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
+    CONSTRAINT service_order_group_f_name_uk UNIQUE (name),
+    CONSTRAINT service_order_group_f_service_id_fk foreign key(service_id) REFERENCES service (id),
+    CONSTRAINT service_order_group_f_merchant_id_fk foreign key(merchant_id) REFERENCES merchant (id)
+);
+
+ALTER SEQUENCE "service_order_group_id_seq" RESTART WITH 100;
+
+CREATE TABLE service_order(
+    service_order_group_id      BIGINT          NOT NULL,
+    endpoint_id                 BIGINT          NOT NULL,
+    orders                      BIGINT          NOT NULL,
+    logical_deletion            BOOLEAN         NOT NULL default false,
+    create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_on                   TIMESTAMP,
+    CONSTRAINT service_order_pk primary key (service_order_group_id, endpoint_id, orders),
+    CONSTRAINT service_order_f_service_order_group_id_orders_uk UNIQUE (service_order_group_id, orders),
+    CONSTRAINT service_order_f_service_order_group_id_fk foreign key(service_order_group_id) REFERENCES service_order_group (id),
+    CONSTRAINT service_order_f_endpoint_id_fk foreign key(endpoint_id) REFERENCES endpoint (id)
+);
+
 CREATE TABLE merchant_client (
     merchant_id                 BIGINT          NOT NULL,
     endpoint_client_id          BIGINT          NOT NULL,
     logical_deletion            BOOLEAN         NOT NULL default false,
     create_on                   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_on                   TIMESTAMP,
-    CONSTRAINT merchant_client_pk PRIMARY KEY(merchant_id, endpoint_client_id),
+    CONSTRAINT merchant_client_pk PRIMARY KEY (merchant_id, endpoint_client_id),
     CONSTRAINT merchant_client_f_merchant_id_endpoint_client_id_create_on_uk UNIQUE (merchant_id, endpoint_client_id, create_on),
     CONSTRAINT merchant_client_f_merchant_id_fk FOREIGN KEY (merchant_id) REFERENCES merchant(id),
     CONSTRAINT merchant_client_f_endpoint_client_id_fk FOREIGN KEY (endpoint_client_id) REFERENCES endpoint_client(id)

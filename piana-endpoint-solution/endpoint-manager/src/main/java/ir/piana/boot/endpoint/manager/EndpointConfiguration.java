@@ -1,8 +1,8 @@
 package ir.piana.boot.endpoint.manager;
 
+import ir.piana.boot.endpoint.core.manager.info.*;
 import ir.piana.boot.endpoint.data.tables.*;
 import ir.piana.boot.endpoint.data.tables.daos.*;
-import ir.piana.boot.endpoint.manager.dto.*;
 import ir.piana.boot.utils.flyway.FlywaySure;
 import ir.piana.boot.utils.flyway.PrimaryFluentConfiguration;
 import ir.piana.boot.utils.restclientconfigurable.HttpEndpointDto;
@@ -13,7 +13,6 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.jooq.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,7 +60,7 @@ public class EndpointConfiguration {
                 .collect(Collectors.toMap(EndpointInfo::id, Function.identity()));
     }
 
-    private Map<Long, ServiceInfo> serviceMap(
+    private Map<Long, ServiceInfo> serviceMapByServiceId(
             ServiceDao serviceDao,
             EndpointsProperties endpointsProperties) {
         SelectConditionStep<Record3<Long, String, String>> where = serviceDao.ctx().select(
@@ -81,6 +80,12 @@ public class EndpointConfiguration {
         ));
         return fetch.stream()
                 .collect(Collectors.toMap(ServiceInfo::id, Function.identity()));
+    }
+
+    private Map<String, ServiceInfo> serviceMapByServiceName(
+            Map<Long, ServiceInfo> serviceMapByServiceId) {
+        return serviceMapByServiceId.values().stream()
+                .collect(Collectors.toMap(ServiceInfo::name, Function.identity()));
     }
 
     private Map<EndpointInfo, List<EndpointNetworkInfo>> endpointToEndpointNetworkMap(
@@ -277,12 +282,13 @@ public class EndpointConfiguration {
             EndpointApiDao endpointApiDao,
             EndpointClientDao endpointClientDao) {
         Map<Long, EndpointInfo> endpointInfoMap = endpointMap(endpointDao, endpointsProperties);
-        Map<Long, ServiceInfo> serviceInfoMap = serviceMap(serviceDao, endpointsProperties);
+        Map<Long, ServiceInfo> serviceInfoMapByServiceId = serviceMapByServiceId(serviceDao, endpointsProperties);
+        Map<String, ServiceInfo> serviceInfoMapByServiceName = serviceMapByServiceName(serviceInfoMapByServiceId);
         Map<EndpointInfo, List<EndpointNetworkInfo>> endpointToEndpointNetworkMap = endpointToEndpointNetworkMap(
                 endpointNetworkDao, endpointInfoMap);
         Map<Long, EndpointNetworkInfo> endpointNetworkInfoMap = endpointNetworkMap(endpointToEndpointNetworkMap);
         Map<EndpointInfo, List<EndpointApiInfo>> endpointToEndpointApiMap = endpointToEndpointApiMap(
-                endpointApiDao, endpointInfoMap, serviceInfoMap);
+                endpointApiDao, endpointInfoMap, serviceInfoMapByServiceId);
         Map<ServiceInfo, List<EndpointApiInfo>> serviceToEndpointApiMap = serviceToEndpointApiMap(endpointToEndpointApiMap);
         Map<EndpointInfo, List<EndpointClientInfo>> endpointToEndpointClientMap = endpointToEndpointClientMap(
                 endpointClientDao, endpointInfoMap, endpointNetworkInfoMap);
@@ -290,9 +296,10 @@ public class EndpointConfiguration {
                 .flatMap(List::stream).map(endpointClient -> new AbstractMap.SimpleEntry<>(
                         endpointClient, createRestClient(restClientBuilderUtils, endpointClient)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return new EndpointSolutionManager(
+        return new EndpointSolutionManagerImpl(
                 endpointInfoMap,
-                serviceInfoMap,
+                serviceInfoMapByServiceId,
+                serviceInfoMapByServiceName,
                 endpointToEndpointNetworkMap,
                 endpointNetworkInfoMap,
                 endpointToEndpointApiMap,

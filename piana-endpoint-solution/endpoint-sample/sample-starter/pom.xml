@@ -20,17 +20,17 @@
     <dependencies>
         <dependency>
             <groupId>ir.piana.boot.endpoint.sample</groupId>
-            <artifactId>sample-operation-provider-one</artifactId>
+            <artifactId>vehicle-info-operation-provider-one</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>ir.piana.boot.endpoint.sample</groupId>
-            <artifactId>sample-operation-provider-two</artifactId>
+            <artifactId>vehicle-info-operation-provider-two</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>ir.piana.boot.endpoint.sample</groupId>
-            <artifactId>sample-operation</artifactId>
+            <artifactId>vehicle-info</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

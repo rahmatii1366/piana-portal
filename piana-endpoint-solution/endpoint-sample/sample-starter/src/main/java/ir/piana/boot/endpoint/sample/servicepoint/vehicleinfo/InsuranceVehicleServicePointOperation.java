@@ -1,21 +1,25 @@
 package ir.piana.boot.endpoint.sample.servicepoint.vehicleinfo;
 
+import ir.piana.boot.endpoint.core.manager.EndpointSolutionManager;
 import ir.piana.boot.endpoint.operation.EndpointOperation;
-import ir.piana.boot.endpoint.sample.service.VehicleInfoRequest;
-import ir.piana.boot.endpoint.sample.service.VehicleInfoResponse;
+import ir.piana.boot.endpoint.sample.service.vehicleinfo.VehicleInfoRequest;
+import ir.piana.boot.endpoint.sample.service.vehicleinfo.VehicleInfoResponse;
 import ir.piana.boot.endpoint.servicepoint.ServicePointOperation;
-import ir.piana.boot.endpoint.servicepoint.ServicePointRequest;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public class InsuranceVehicleServicePointOperation
-        implements ServicePointOperation<VehicleInfoRequest, VehicleInfoResponse> {
-    private final List<EndpointOperation<VehicleInfoRequest, VehicleInfoResponse>> endpointOperations;
+        extends ServicePointOperation<VehicleInfoRequest, VehicleInfoResponse> {
+//    private final List<EndpointOperation<VehicleInfoRequest, VehicleInfoResponse>> endpointOperations;
+
+    public InsuranceVehicleServicePointOperation(
+            List<EndpointOperation<VehicleInfoRequest, VehicleInfoResponse>> endpointOperations,
+            EndpointSolutionManager endpointSolutionManager) {
+        super(endpointOperations, endpointSolutionManager);
+    }
 
     @Override
-    public VehicleInfoResponse apply(ServicePointRequest<VehicleInfoRequest> vehicleInfoRequestServicePointRequest) {
-        return null;
+    public String serviceName() {
+        return "inquiry";
     }
 }

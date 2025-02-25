@@ -27,8 +27,20 @@ insert into merchant (id, name)
     select 2, 'm2'
     WHERE NOT EXISTS (SELECT * FROM merchant);
 
+insert into service_order_group (id, service_id, merchant_id, name)
+    select 1, 1, 1, 'group1' union
+    select 2, 1, 2, 'group2'
+    WHERE NOT EXISTS (SELECT * FROM service_order_group);
+
+insert into service_order (service_order_group_id, endpoint_id, orders)
+    select 1, 1, 1 union
+    select 1, 2, 2 union
+    select 2, 2, 1 union
+    select 2, 1, 2
+    WHERE NOT EXISTS (SELECT * FROM service_order_group);
+
 insert into merchant_client (merchant_id, endpoint_client_id)
-    select 1, 1 union
+    select 1, 1 union --
     select 1, 2 union
     select 2, 1 union
     select 2, 2

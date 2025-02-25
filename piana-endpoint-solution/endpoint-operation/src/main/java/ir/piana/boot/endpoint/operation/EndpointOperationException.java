@@ -2,6 +2,7 @@ package ir.piana.boot.endpoint.operation;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.web.client.RestClient;
 
 public class EndpointOperationException extends RuntimeException {
     private HttpStatusCode httpStatusCode;

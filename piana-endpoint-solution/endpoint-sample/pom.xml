@@ -16,10 +16,11 @@
     <modules>
         <module>provider-one</module>
         <module>provider-two</module>
-        <module>sample-operation</module>
+        <module>vehicle-info</module>
         <module>sample-starter</module>
-        <module>sample-operation-provider-one</module>
-        <module>sample-operation-provider-two</module>
+        <module>vehicle-info-operation-provider-one</module>
+        <module>vehicle-info-operation-provider-two</module>
+        <module>provider-one-auth-enable</module>
     </modules>
 
     <properties>

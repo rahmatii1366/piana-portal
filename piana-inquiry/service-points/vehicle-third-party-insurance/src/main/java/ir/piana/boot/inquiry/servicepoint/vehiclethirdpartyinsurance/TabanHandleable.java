@@ -1,3 +1,4 @@
+/*
 package ir.piana.boot.inquiry.servicepoint.vehiclethirdpartyinsurance;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -102,3 +103,4 @@ class TabanHandleable<R>
         return (R) getByVin(requestDto.vin(), requestDto.productionYear());
     }
 }
+*/

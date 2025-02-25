@@ -19,6 +19,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>ir.piana.boot.endpoint</groupId>
+            <artifactId>endpoint-core</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ir.piana.boot.utils</groupId>
+            <artifactId>restclient-request</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

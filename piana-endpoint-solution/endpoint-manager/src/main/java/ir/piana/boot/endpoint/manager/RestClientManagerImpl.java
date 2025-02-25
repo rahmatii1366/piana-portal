@@ -1,6 +1,6 @@
 package ir.piana.boot.endpoint.manager;
 
-import ir.piana.boot.endpoint.manager.dto.EndpointClientInfo;
+import ir.piana.boot.endpoint.core.manager.info.EndpointClientInfo;
 import org.springframework.web.client.RestClient;
 
 public class RestClientManagerImpl implements RestClientManager {
