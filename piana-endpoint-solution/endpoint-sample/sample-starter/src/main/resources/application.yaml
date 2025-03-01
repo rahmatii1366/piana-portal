@@ -9,6 +9,11 @@ piana:
         - sample2
       services:
         - insurance_vehicle_third_party_inquiry
+    redis-cache:
+      enabled: true
+      sentinel: false
+      host: 'localhost'
+      port: 6379
 spring:
   application:
     name: sample-starter

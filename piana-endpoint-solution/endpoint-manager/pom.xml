@@ -20,6 +20,11 @@
     <dependencies>
         <dependency>
             <groupId>ir.piana.boot.utils</groupId>
+            <artifactId>piana-web-error-processor</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ir.piana.boot.utils</groupId>
             <artifactId>piana-flyway</artifactId>
             <version>1.0</version>
         </dependency>

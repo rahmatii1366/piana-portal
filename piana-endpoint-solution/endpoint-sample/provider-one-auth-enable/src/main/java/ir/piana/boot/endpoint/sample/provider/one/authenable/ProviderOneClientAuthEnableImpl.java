@@ -4,6 +4,7 @@ import ir.piana.boot.endpoint.core.manager.EndpointClientAuthEnable;
 import ir.piana.boot.endpoint.core.manager.dto.EndpointClientAuthMappable;
 import ir.piana.boot.endpoint.core.manager.info.EndpointClientInfo;
 import ir.piana.boot.utils.jedisutils.JedisPool;
+import lombok.Getter;
 import net.javacrumbs.shedlock.core.LockingTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -29,7 +30,9 @@ public class ProviderOneClientAuthEnableImpl extends EndpointClientAuthEnable {
                     else throw new RuntimeException();
                 });
 
-        return new AuthInfo(endpointClientInfo.id(), authResponse.accessToken, authResponse.refreshToken);
+        return new AuthInfo(endpointClientInfo.id(),
+                System.currentTimeMillis(),
+                authResponse.accessToken, authResponse.refreshToken);
     }
 
     public record AuthRequest(String clientId, String secretKey) {
@@ -38,12 +41,15 @@ public class ProviderOneClientAuthEnableImpl extends EndpointClientAuthEnable {
     public record AuthResponse (String accessToken, String refreshToken) {
     }
 
+    @Getter
     public static class AuthInfo extends EndpointClientAuthMappable {
+        private long timestamp;
         private String accessToken;
         private String refreshToken;
 
-        AuthInfo(long endpointClientId, String accessToken, String refreshToken) {
+        AuthInfo(long endpointClientId, long timestamp, String accessToken, String refreshToken) {
             super(endpointClientId);
+            this.timestamp = timestamp;
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
         }

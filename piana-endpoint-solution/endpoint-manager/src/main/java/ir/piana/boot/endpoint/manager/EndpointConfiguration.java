@@ -1,5 +1,6 @@
 package ir.piana.boot.endpoint.manager;
 
+import ir.piana.boot.endpoint.core.manager.EndpointSolutionManager;
 import ir.piana.boot.endpoint.core.manager.info.*;
 import ir.piana.boot.endpoint.data.tables.*;
 import ir.piana.boot.endpoint.data.tables.daos.*;
@@ -7,27 +8,24 @@ import ir.piana.boot.utils.flyway.FlywaySure;
 import ir.piana.boot.utils.flyway.PrimaryFluentConfiguration;
 import ir.piana.boot.utils.restclientconfigurable.HttpEndpointDto;
 import ir.piana.boot.utils.restclientconfigurable.RestClientBuilderUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.jooq.*;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Configuration
-@ConditionalOnProperty(prefix = "piana.tools.endpoint-solution", name = "enabled", havingValue = "true", matchIfMissing = false)
+//@ConditionalOnProperty(prefix = "piana.tools.endpoint-solution", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class EndpointConfiguration {
     @Component
     @ConfigurationProperties(prefix = "piana.tools.endpoint-solution")
@@ -36,6 +34,11 @@ public class EndpointConfiguration {
     public class EndpointsProperties {
         private List<String> endpoints;
         private List<String> services;
+
+        @PostConstruct
+        public void init() {
+            System.out.println();
+        }
     }
 
     private Map<Long, EndpointInfo> endpointMap(
@@ -152,27 +155,40 @@ public class EndpointConfiguration {
             Map<Long, EndpointInfo> endpointInfoMap,
             Map<Long, ServiceInfo> serviceInfoMap
     ) {
-        SelectSeekStep1<Record6<Long, Long, Long, String, String, String>, Long> record6s = endpointApiDao.ctx()
+        SelectSeekStep1<Record9<Long, Long, Long, String, String, String, String, String, String>,
+                Long> record9s = endpointApiDao.ctx()
                 .select(
                         EndpointApi.ENDPOINT_API.ID,
                         EndpointApi.ENDPOINT_API.ENDPOINT_ID,
                         EndpointApi.ENDPOINT_API.SERVICE_ID,
-                        EndpointApi.ENDPOINT_API.DESCRIPTION,
                         EndpointApi.ENDPOINT_API.METHOD,
-                        EndpointApi.ENDPOINT_API.URL
+                        EndpointApi.ENDPOINT_API.URL,
+                        EndpointApi.ENDPOINT_API.ACCEPTABLE_QUERY_PARAMS,
+                        EndpointApi.ENDPOINT_API.ACCEPTABLE_PATH_PARAMS,
+                        EndpointApi.ENDPOINT_API.ACCEPTABLE_HEADER_KEYS,
+                        EndpointApi.ENDPOINT_API.DESCRIPTION
                 )
                 .from(EndpointApi.ENDPOINT_API)
                 .where(EndpointApi.ENDPOINT_API.ENDPOINT_ID.in(endpointInfoMap.keySet()))
                 .and(EndpointApi.ENDPOINT_API.LOGICAL_DELETION.eq(false))
                 .orderBy(EndpointApi.ENDPOINT_API.ENDPOINT_ID);
 
-        List<EndpointApiInfo> fetch = record6s.fetch(rec -> new EndpointApiInfo(
-                rec.get(EndpointApi.ENDPOINT_API.ID),
-                endpointInfoMap.get(rec.get(EndpointApi.ENDPOINT_API.ENDPOINT_ID)),
-                serviceInfoMap.get(rec.get(EndpointApi.ENDPOINT_API.SERVICE_ID)),
-                rec.get(EndpointApi.ENDPOINT_API.METHOD),
-                rec.get(EndpointApi.ENDPOINT_API.URL),
-                rec.get(EndpointApi.ENDPOINT_API.DESCRIPTION))
+        List<EndpointApiInfo> fetch = record9s.fetch(rec -> {
+                    String queryParams = rec.get(EndpointApi.ENDPOINT_API.ACCEPTABLE_QUERY_PARAMS);
+                    String pathParams = rec.get(EndpointApi.ENDPOINT_API.ACCEPTABLE_PATH_PARAMS);
+                    String headers = rec.get(EndpointApi.ENDPOINT_API.ACCEPTABLE_HEADER_KEYS);
+
+                    return new EndpointApiInfo(
+                            rec.get(EndpointApi.ENDPOINT_API.ID),
+                            endpointInfoMap.get(rec.get(EndpointApi.ENDPOINT_API.ENDPOINT_ID)),
+                            serviceInfoMap.get(rec.get(EndpointApi.ENDPOINT_API.SERVICE_ID)),
+                            rec.get(EndpointApi.ENDPOINT_API.METHOD),
+                            rec.get(EndpointApi.ENDPOINT_API.URL),
+                            queryParams == null ? Collections.EMPTY_LIST : Arrays.asList(queryParams.split(",")),
+                            pathParams == null ? Collections.EMPTY_LIST : Arrays.asList(pathParams.split(",")),
+                            headers == null ? Collections.EMPTY_LIST : Arrays.asList(headers.split(",")),
+                            rec.get(EndpointApi.ENDPOINT_API.DESCRIPTION));
+                }
         );
         Map<EndpointInfo, List<EndpointApiInfo>> collect = fetch.stream()
                 .collect(Collectors.groupingBy(EndpointApiInfo::endpoint));
@@ -262,6 +278,106 @@ public class EndpointConfiguration {
         return restClient;
     }
 
+    private Map<Long, MerchantInfo> merchantIdToMerchantInfoMap(
+            MerchantDao merchantDao
+    ) {
+        List<MerchantInfo> fetch = merchantDao.ctx()
+                .select(
+                        Merchant.MERCHANT.ID,
+                        Merchant.MERCHANT.NAME,
+                        Merchant.MERCHANT.DESCRIPTION
+                )
+                .from(Merchant.MERCHANT)
+                .where(Merchant.MERCHANT.LOGICAL_DELETION.eq(false))
+                .orderBy(Merchant.MERCHANT.ID).fetch(rec -> new MerchantInfo(
+                        rec.get(Merchant.MERCHANT.ID),
+                        rec.get(Merchant.MERCHANT.NAME),
+                        rec.get(Merchant.MERCHANT.DESCRIPTION)
+                ));
+        Map<Long, MerchantInfo> collect = fetch.stream()
+                .collect(Collectors.toMap(MerchantInfo::id, Function.identity()));
+        return collect;
+    }
+
+    private Map<Long, Map<Long, List<EndpointInfo>>> serviceIdMapToMerchantIdMapToEndpoints(
+            ServiceOrderGroupDao serviceOrderGroupDao,
+            Map<Long, EndpointInfo> endpointInfoMap
+    ) {
+        List<ServiceOrderGroupInfo> fetch = serviceOrderGroupDao.ctx()
+                .select(
+                        ServiceOrderGroup.SERVICE_ORDER_GROUP.ID,
+                        ServiceOrderGroup.SERVICE_ORDER_GROUP.SERVICE_ID,
+                        ServiceOrderGroup.SERVICE_ORDER_GROUP.MERCHANT_ID
+                )
+                .from(ServiceOrderGroup.SERVICE_ORDER_GROUP)
+                .where(ServiceOrderGroup.SERVICE_ORDER_GROUP.LOGICAL_DELETION.eq(false))
+                .orderBy(ServiceOrderGroup.SERVICE_ORDER_GROUP.ID)
+                .fetch(rec -> {
+                    Long serviceOrderGroupId = rec.get(ServiceOrderGroup.SERVICE_ORDER_GROUP.ID);
+                    List<EndpointInfo> orderedEndpointInfo = serviceOrderGroupDao.ctx().select(
+                                    ServiceOrder.SERVICE_ORDER.ENDPOINT_ID,
+                                    ServiceOrder.SERVICE_ORDER.ORDERS)
+                            .from(ServiceOrder.SERVICE_ORDER)
+                            .where(ServiceOrder.SERVICE_ORDER.LOGICAL_DELETION.eq(false))
+                            .and(ServiceOrder.SERVICE_ORDER.ENDPOINT_ID.eq(serviceOrderGroupId))
+                            .orderBy(ServiceOrder.SERVICE_ORDER.ORDERS.asc())
+                            .fetch(rec2 -> {
+                                Long endpointId = rec2.get(ServiceOrder.SERVICE_ORDER.ENDPOINT_ID);
+                                return endpointInfoMap.get(endpointId);
+                            });
+
+                    return new ServiceOrderGroupInfo(
+                            rec.get(ServiceOrderGroup.SERVICE_ORDER_GROUP.ID),
+                            rec.get(ServiceOrderGroup.SERVICE_ORDER_GROUP.SERVICE_ID),
+                            rec.get(ServiceOrderGroup.SERVICE_ORDER_GROUP.MERCHANT_ID),
+                            orderedEndpointInfo
+                    );
+                });
+        Map<Long, Map<Long, List<EndpointInfo>>> collect = fetch.stream()
+                .collect(Collectors.groupingBy(ServiceOrderGroupInfo::serviceId,
+                        Collectors.toMap(ServiceOrderGroupInfo::merchantId, ServiceOrderGroupInfo::endpoints)));
+        return collect;
+    }
+
+    private Map<Long, Map<Long, List<EndpointClientInfo>>> endpointIdMapToMerchantIdMapToEndpointClientsByOrder(
+            EndpointOrderGroupDao endpointOrderGroupDao,
+            Map<Long, EndpointClientInfo> endpointClientIdMapToEndpointClient) {
+        List<EndpointOrderGroupInfo> fetch = endpointOrderGroupDao.ctx()
+                .select(
+                        EndpointOrderGroup.ENDPOINT_ORDER_GROUP.ID,
+                        EndpointOrderGroup.ENDPOINT_ORDER_GROUP.ENDPOINT_ID,
+                        EndpointOrderGroup.ENDPOINT_ORDER_GROUP.MERCHANT_ID
+                )
+                .from(EndpointOrderGroup.ENDPOINT_ORDER_GROUP)
+                .where(EndpointOrderGroup.ENDPOINT_ORDER_GROUP.LOGICAL_DELETION.eq(false))
+                .orderBy(EndpointOrderGroup.ENDPOINT_ORDER_GROUP.ID)
+                .fetch(rec -> {
+                    Long endpointOrderGroupId = rec.get(EndpointOrderGroup.ENDPOINT_ORDER_GROUP.ID);
+                    List<EndpointClientInfo> endpointClientInfoList = endpointOrderGroupDao.ctx().select(
+                                    EndpointOrder.ENDPOINT_ORDER.ENDPOINT_CLIENT_ID,
+                                    EndpointOrder.ENDPOINT_ORDER.ORDERS)
+                            .from(EndpointOrder.ENDPOINT_ORDER)
+                            .where(EndpointOrder.ENDPOINT_ORDER.LOGICAL_DELETION.eq(false))
+                            .and(EndpointOrder.ENDPOINT_ORDER.ENDPOINT_ORDER_GROUP_ID.eq(endpointOrderGroupId))
+                            .orderBy(EndpointOrder.ENDPOINT_ORDER.ORDERS.asc())
+                            .fetch(rec2 -> {
+                                Long endpointClientId = rec2.get(EndpointOrder.ENDPOINT_ORDER.ENDPOINT_CLIENT_ID);
+                                return endpointClientIdMapToEndpointClient.get(endpointClientId);
+                            });
+
+                    return new EndpointOrderGroupInfo(
+                            endpointOrderGroupId,
+                            rec.get(EndpointOrderGroup.ENDPOINT_ORDER_GROUP.ENDPOINT_ID),
+                            rec.get(EndpointOrderGroup.ENDPOINT_ORDER_GROUP.MERCHANT_ID),
+                            endpointClientInfoList
+                    );
+                });
+        Map<Long, Map<Long, List<EndpointClientInfo>>> collect = fetch.stream()
+                .collect(Collectors.groupingBy(EndpointOrderGroupInfo::endpointId,
+                        Collectors.toMap(EndpointOrderGroupInfo::merchantId, EndpointOrderGroupInfo::endpointClients)));
+        return collect;
+    }
+
     @Bean
     public PrimaryFluentConfiguration endpointsFluentConfiguration() {
         FluentConfiguration endpoints = Flyway.configure().schemas("endpoints")
@@ -280,7 +396,10 @@ public class EndpointConfiguration {
             ServiceDao serviceDao,
             EndpointNetworkDao endpointNetworkDao,
             EndpointApiDao endpointApiDao,
-            EndpointClientDao endpointClientDao) {
+            EndpointClientDao endpointClientDao,
+            MerchantDao merchantDao,
+            ServiceOrderGroupDao serviceOrderGroupDao,
+            EndpointOrderGroupDao endpointOrderGroupDao) {
         Map<Long, EndpointInfo> endpointInfoMap = endpointMap(endpointDao, endpointsProperties);
         Map<Long, ServiceInfo> serviceInfoMapByServiceId = serviceMapByServiceId(serviceDao, endpointsProperties);
         Map<String, ServiceInfo> serviceInfoMapByServiceName = serviceMapByServiceName(serviceInfoMapByServiceId);
@@ -292,10 +411,17 @@ public class EndpointConfiguration {
         Map<ServiceInfo, List<EndpointApiInfo>> serviceToEndpointApiMap = serviceToEndpointApiMap(endpointToEndpointApiMap);
         Map<EndpointInfo, List<EndpointClientInfo>> endpointToEndpointClientMap = endpointToEndpointClientMap(
                 endpointClientDao, endpointInfoMap, endpointNetworkInfoMap);
-        Map<EndpointClientInfo, RestClient> collect = endpointToEndpointClientMap.values().stream()
+        Map<Long, EndpointClientInfo> endpointClientIdMapToEndpointClient = null;
+        Map<EndpointClientInfo, RestClient> endpointClientToRestClientMap = endpointToEndpointClientMap.values().stream()
                 .flatMap(List::stream).map(endpointClient -> new AbstractMap.SimpleEntry<>(
                         endpointClient, createRestClient(restClientBuilderUtils, endpointClient)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Long, MerchantInfo> merchantIdToMerchantMap = merchantIdToMerchantInfoMap(merchantDao);
+        Map<Long, Map<Long, List<EndpointInfo>>> serviceIdMapToMerchantIdMapToEndpoints =
+                serviceIdMapToMerchantIdMapToEndpoints(serviceOrderGroupDao, endpointInfoMap);
+        Map<Long, Map<Long, List<EndpointClientInfo>>> endpointIdMapToMerchantIdMapToEndpointClients =
+                endpointIdMapToMerchantIdMapToEndpointClientsByOrder(
+                        endpointOrderGroupDao, endpointClientIdMapToEndpointClient);
         return new EndpointSolutionManagerImpl(
                 endpointInfoMap,
                 serviceInfoMapByServiceId,
@@ -304,21 +430,11 @@ public class EndpointConfiguration {
                 endpointNetworkInfoMap,
                 endpointToEndpointApiMap,
                 serviceToEndpointApiMap,
+                endpointClientIdMapToEndpointClient,
                 endpointToEndpointClientMap,
-                collect);
-    }
-
-    private List<Endpoint> loadEndpoints(EndpointDao endpointDao) {
-        /*endpointDao.ctx().select()
-                .from(endpointDao.ctx().select(
-                                Endpoint.ENDPOINT.ID,
-                                DSL.max(Endpoint.ENDPOINT.CREATE_ON).as("create_on"))
-                        .from(Endpoint.ENDPOINT)
-                        .groupBy(Endpoint.ENDPOINT.ID, Endpoint.ENDPOINT.DISABLED))
-                .where(DSL.field(ID, Endpoint.ENDPOINT.CREATE_ON).in(
-
-                ))
-                .and(Endpoint.ENDPOINT.DISABLED.eq(false))*/
-        return null;
+                endpointClientToRestClientMap,
+                merchantIdToMerchantMap,
+                serviceIdMapToMerchantIdMapToEndpoints,
+                endpointIdMapToMerchantIdMapToEndpointClients);
     }
 }

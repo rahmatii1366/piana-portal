@@ -29,24 +29,61 @@ public abstract class EndpointClientAuthEnable {
         Map<String, EndpointClientAuthMappable> container = new LinkedHashMap<>();
         if (load == null) {
             lockingTaskExecutor.executeWithLock((Runnable) () -> {
-                long start = System.currentTimeMillis();
-                try {
-                    container.put("load", authenticate(restClient, endpointClientInfo));
-                } finally {
-                    long end = System.currentTimeMillis();
-                    log.info("Elapsed Time for {} in milli seconds: {}", (end - start));
-                }
-            }, new LockConfiguration(
-                    Instant.now(),
-                    "endpoint-" + endpointClientInfo.endpoint().name(),
-                    Duration.of(5, ChronoUnit.SECONDS),
-                    Duration.of(1, ChronoUnit.SECONDS))
+                        long start = System.currentTimeMillis();
+                        try {
+                            EndpointClientAuthMappable loadAfterLock = EndpointClientAuthMappable.load(
+                                    jedisPool, endpointClientInfo.id());
+                            if (loadAfterLock != null) {
+                                container.put("load", loadAfterLock);
+                            }
+                            container.put("load", authenticate(restClient, endpointClientInfo));
+                        } finally {
+                            long end = System.currentTimeMillis();
+                            log.info("Elapsed Time for {} in milli seconds: {}", (end - start));
+                        }
+                    }, new LockConfiguration(
+                            Instant.now(),
+                            "endpoint-" + endpointClientInfo.endpoint().name(),
+                            Duration.of(5, ChronoUnit.SECONDS),
+                            Duration.of(1, ChronoUnit.SECONDS))
             );
         }
 
         load = container.get("load");
         jedisPool.setRedisHashMappable(load);
         return load;
+    }
+
+    public final EndpointClientAuthMappable forceAuthenticate(
+            RestClient restClient, EndpointClientInfo endpointClientInfo) {
+        final EndpointClientAuthMappable load = EndpointClientAuthMappable.load(
+                jedisPool, endpointClientInfo.id());
+        Map<String, EndpointClientAuthMappable> container = new LinkedHashMap<>();
+
+        lockingTaskExecutor.executeWithLock((Runnable) () -> {
+                    long start = System.currentTimeMillis();
+                    try {
+                        EndpointClientAuthMappable loadAfterLock = EndpointClientAuthMappable.load(
+                                jedisPool, endpointClientInfo.id());
+                        if ((load == null && loadAfterLock != null) ||
+                                (load != null && loadAfterLock.getTimestamp() > load.getTimestamp())) {
+                            container.put("load", loadAfterLock);
+                        } else {
+                            EndpointClientAuthMappable authenticated = authenticate(restClient, endpointClientInfo);
+                            container.put("load", authenticated);
+                            jedisPool.setRedisHashMappable(authenticated);
+                        }
+                    } finally {
+                        long end = System.currentTimeMillis();
+                        log.info("Elapsed Time for {} in milli seconds: {}", (end - start));
+                    }
+                }, new LockConfiguration(
+                        Instant.now(),
+                        "endpoint-" + endpointClientInfo.endpoint().name(),
+                        Duration.of(5, ChronoUnit.SECONDS),
+                        Duration.of(1, ChronoUnit.SECONDS))
+        );
+        return container.get("load");
     }
 
     protected abstract EndpointClientAuthMappable authenticate(

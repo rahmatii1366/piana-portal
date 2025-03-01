@@ -21,8 +21,8 @@ public abstract class ServicePointOperation<T, R> implements Function<ServicePoi
     @Override
     public final R apply(ServicePointRequest<T> servicePointRequest) {
         //ToDo should be complete
-        List<EndpointClientInfo> endpointClients = endpointSolutionManager.getEndpointClients(
-                serviceName(), servicePointRequest.getMerchantId());
+//        List<EndpointClientInfo> endpointClients = endpointSolutionManager.getEndpointClients(
+//                serviceName(), servicePointRequest.getMerchantId());
         return null;
     }
 

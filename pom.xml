@@ -31,7 +31,7 @@
         <module>piana-utilities</module>
         <module>piana-endpoint-solution</module>
         <module>piana-openidc</module>
-        <module>piana-inquiry</module>
+<!--        <module>piana-inquiry</module>-->
     </modules>
 
     <properties>

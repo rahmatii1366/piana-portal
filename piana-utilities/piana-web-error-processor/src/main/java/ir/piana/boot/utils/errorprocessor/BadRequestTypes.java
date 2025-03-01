@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import java.util.Locale;
 
 public enum BadRequestTypes implements ErrorType {
+    API_NOT_EXIST("request.api.not-exist"),
+    API_NOT_ACCESSIBLE_TO_MERCHANT("request.api.not-accessible-to-merchant"),
     REQUEST_BODY_NOT_VALID("request.body.not_valid"),
     basicHeaderNotSet("basic-header.not-set"),
     INPUT_NOT_VALID("input.not_valid"),

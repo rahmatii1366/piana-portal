@@ -10,12 +10,14 @@ import ir.piana.boot.endpoint.sample.servicepoint.vehicleinfo.InsuranceVehicleSe
 import ir.piana.boot.endpoint.sample.servicepoint.vehicleinfo.SampleServicePointOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import java.util.List;
 
 @Configuration
 public class ServicePointOperationConfiguration {
     @Bean
+    @DependsOn("endpointSolutionManager")
     public SampleServicePointOperation sampleServicePointOperation(
             List<EndpointOperation<SampleBRequest, SampleBResponse>> endpointOperations,
             EndpointSolutionManager endpointSolutionManager

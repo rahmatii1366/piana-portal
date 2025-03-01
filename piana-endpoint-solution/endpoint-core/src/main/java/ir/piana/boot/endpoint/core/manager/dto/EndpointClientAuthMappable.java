@@ -20,4 +20,6 @@ public abstract class EndpointClientAuthMappable implements RedisHashMappable {
                 EndpointClientAuthMappable.class, String.valueOf(endpointClientId));
         return redisHashMappable;
     }
+
+    public abstract long getTimestamp();
 }
